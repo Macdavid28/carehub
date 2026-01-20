@@ -1,7 +1,7 @@
 # Server
 /server/node_modules/
-/server/ .env
+.env
+*.log
 
 # Client
 /client/node_modules/
-/client/build.log
