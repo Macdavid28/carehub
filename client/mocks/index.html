@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HMS Design Variations</title>
+    <style>
+        :root {
+            /* Base Reset */
+            --bg-color: #f4f6f8;
+            --text-color: #333;
+            --sidebar-bg: #fff;
+            --sidebar-text: #555;
+            --primary-color: #007bff;
+            --card-bg: #fff;
+            --card-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            --font-family: 'Inter', system-ui, sans-serif;
+            --radius: 8px;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* Control Panel */
+        #theme-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            padding: 15px;
+            border-radius: 12px;
+            z-index: 1000;
+            color: white;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        #theme-controls select {
+            padding: 8px;
+            border-radius: 4px;
+            border: none;
+            margin-top: 5px;
+            background: #444;
+            color: white;
+            cursor: pointer;
+        }
+
+        .layout-container {
+            display: flex;
+            width: 100%;
+        }
+
+        /* Sidebar defaults */
+        aside {
+            width: 250px;
+            background: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 40px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-item {
+            padding: 12px 15px;
+            margin-bottom: 5px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(0,0,0,0.05);
+            color: var(--primary-color);
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+        }
+
+        .card.stat h3 { margin: 0 0 10px 0; font-size: 0.9rem; opacity: 0.7; }
+        .card.stat .value { font-size: 1.8rem; font-weight: 700; }
+
+        .patient-list {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+        }
+        .table-header, .table-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            padding: 15px 20px;
+            align-items: center;
+        }
+        .table-header { font-weight: 600; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .table-row { border-bottom: 1px solid rgba(0,0,0,0.03); }
+        .table-row:last-child { border-bottom: none; }
+        .status { padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; display: inline-block; }
+        .status.stable { background: #e3fcf7; color: #0d8a72; }
+        .status.critical { background: #ffebeb; color: #c92a2a; }
+
+        /* --- THEME VARIATIONS --- */
+
+        /* 1. Clinical Minimalist */
+        body.theme-clinical {
+            --bg-color: #f9f9f9;
+            --sidebar-bg: #ffffff;
+            --card-bg: #ffffff;
+            --primary-color: #0052cc;
+            --radius: 4px;
+            --card-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        /* 2. Glassmorphism */
+        body.theme-glass {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --text-color: #fff;
+            --sidebar-bg: rgba(255, 255, 255, 0.1);
+            --sidebar-text: #fff;
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --primary-color: #fff;
+            --card-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        body.theme-glass .card, body.theme-glass aside {
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        body.theme-glass .nav-item:hover { background: rgba(255,255,255,0.2); }
+        body.theme-glass .table-row { border-bottom: 1px solid rgba(255,255,255,0.1); }
+        body.theme-glass .status { background: rgba(255,255,255,0.2); color: white; }
+
+        /* 3. High-Tech Night Shift */
+        body.theme-dark-tech {
+            --bg-color: #0b0c10;
+            --text-color: #c5c6c7;
+            --sidebar-bg: #1f2833;
+            --sidebar-text: #66fcf1;
+            --card-bg: #1f2833;
+            --primary-color: #45a29e;
+            --card-shadow: 0 0 15px rgba(102, 252, 241, 0.1);
+            --radius: 2px;
+        }
+        body.theme-dark-tech .card { border: 1px solid #45a29e; }
+        
+        /* 4. Warm & Welcoming (Pediatrics) */
+        body.theme-wellness {
+            --bg-color: #fff5f2;
+            --primary-color: #ff8e72;
+            --sidebar-bg: #fff;
+            --card-bg: #fff;
+            --radius: 20px;
+            --font-family: 'Nunito', sans-serif;
+        }
+        body.theme-wellness aside { background: #fff0eb; }
+        body.theme-wellness .logo { color: #ff6b6b; }
+        body.theme-wellness .card { border: none; box-shadow: 0 10px 25px rgba(255, 142, 114, 0.1); }
+        body.theme-wellness .nav-item.active { background: #ffded6; color: #d64545; }
+
+        /* 5. Corporate Professional */
+        body.theme-corporate {
+            --bg-color: #eef2f5;
+            --primary-color: #2c3e50;
+            --sidebar-bg: #2c3e50;
+            --sidebar-text: #ecf0f1;
+            --card-bg: #fff;
+            --radius: 0px;
+        }
+        body.theme-corporate nav .nav-item { color: #bdc3c7; }
+        body.theme-corporate nav .nav-item.active { background: #34495e; color: white; border-left: 4px solid #3498db; }
+
+        /* 6. Neumorphic */
+        body.theme-neumorphic {
+            --bg-color: #e0e5ec;
+            --text-color: #4d4d4d;
+            --sidebar-bg: #e0e5ec;
+            --card-bg: #e0e5ec;
+            --primary-color: #6d5dfc;
+            --card-shadow: 9px 9px 16px rgb(163,177,198,0.6), -9px -9px 16px rgba(255,255,255, 0.5);
+            --radius: 30px;
+        }
+        body.theme-neumorphic aside { border-right: none; box-shadow: 5px 0 15px rgba(0,0,0,0.05); z-index: 10; }
+        body.theme-neumorphic .card { box-shadow: var(--card-shadow); border: none; }
+        body.theme-neumorphic .nav-item.active { box-shadow: inset 6px 6px 10px 0 rgba(163,177,198, 0.7), inset -6px -6px 10px 0 rgba(255,255,255, 0.8); background: transparent; }
+
+        /* 7. Mobile-First Compact */
+        body.theme-compact .layout-container { max-width: 480px; margin: 0 auto; border: 1px solid #ddd; height: 95vh; margin-top: 2.5vh; border-radius: 30px; overflow: hidden; position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+        body.theme-compact aside { position: absolute; bottom: 0; width: 100%; height: 70px; flex-direction: row; justify-content: space-around; padding: 0; align-items: center; border-top: 1px solid #eee; border-right: none; }
+        body.theme-compact .nav-item { flex-direction: column; font-size: 0.7rem; gap: 4px; }
+        body.theme-compact .logo { display: none; }
+        body.theme-compact main { padding-bottom: 80px; }
+
+        /* 8. Command Center */
+        body.theme-command {
+            --bg-color: #1a1a1a;
+            --text-color: #e0e0e0;
+            --card-bg: #2d2d2d;
+            --sidebar-bg: #000;
+            --primary-color: #ff9800; /* Amber alert style */
+            font-family: 'Roboto Mono', monospace;
+            --radius: 0;
+        }
+        body.theme-command .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        body.theme-command .card { border: 1px solid #444; }
+        body.theme-command .value { color: #ff9800; }
+        body.theme-command aside { width: 80px; align-items: center; }
+        body.theme-command .nav-item span { display: none; } /* Icon only */
+
+        /* 9. Timeline Focus */
+        body.theme-timeline main { display: flex; gap: 20px; }
+        body.theme-timeline .patient-list { width: 300px; flex-shrink: 0; }
+        body.theme-timeline .timeline-view { flex: 1; background: white; padding: 20px; border-radius: 8px; }
+        /* Only active if body has class */
+        .timeline-view { display: none; }
+        body.theme-timeline .timeline-view { display: block; }
+        body.theme-timeline .stats-grid { display: none; } /* Hide stats for this view */
+
+        /* 10. Futuristic Holographic */
+        body.theme-holo {
+            background-color: #000;
+            background-image: 
+                linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+            --text-color: #0ff;
+            --card-bg: rgba(0, 20, 40, 0.8);
+            --sidebar-bg: rgba(0, 20, 40, 0.9);
+            --primary-color: #0ff;
+            --card-shadow: 0 0 10px #0ff;
+            font-family: 'Orbitron', sans-serif;
+        }
+        body.theme-holo .card { border: 1px solid #0ff; box-shadow: 0 0 10px rgba(0, 255, 255, 0.2); }
+        body.theme-holo .value { text-shadow: 0 0 10px #0ff; }
+
+    </style>
+    <!-- Font imports -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Nunito:wght@400;700&family=Roboto+Mono:wght@400;500&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body class="theme-clinical">
+
+    <div id="theme-controls">
+        <label for="theme-select">Select Design Concept:</label><br>
+        <select id="theme-select" onchange="changeTheme(this.value)">
+            <option value="theme-clinical">1. Clinical Minimalist</option>
+            <option value="theme-glass">2. Modern Glassmorphism</option>
+            <option value="theme-corporate">3. Corporate Professional</option>
+            <option value="theme-wellness">4. Warm & Welcoming (Pediatrics)</option>
+            <option value="theme-dark-tech">5. High-Tech Night Shift</option>
+            <option value="theme-compact">6. Mobile-First Compact</option>
+            <option value="theme-neumorphic">7. Neumorphic Control Panel</option>
+            <option value="theme-command">8. Command Center Data-Heavy</option>
+            <option value="theme-timeline">9. Timeline View Focus</option>
+            <option value="theme-holo">10. Futuristic Holographic</option>
+        </select>
+    </div>
+
+    <div class="layout-container">
+        <aside>
+            <div class="logo">
+                <span class="icon">✚</span> CareHub
+            </div>
+            <nav>
+                <div class="nav-item active"><span>📊</span> <span>Dashboard</span></div>
+                <div class="nav-item"><span>📅</span> <span>Appointments</span></div>
+                <div class="nav-item"><span>👥</span> <span>Patients</span></div>
+                <div class="nav-item"><span>🩺</span> <span>Doctors</span></div>
+                <div class="nav-item"><span>💊</span> <span>Pharmacy</span></div>
+                <div class="nav-item"><span>⚙️</span> <span>Settings</span></div>
+            </nav>
+        </aside>
+
+        <main>
+            <header>
+                <div>
+                    <h1 style="margin:0; font-size:1.5rem;">Doctor Dashboard</h1>
+                    <p style="margin:5px 0 0; opacity:0.6;">Welcome back, Dr. Smith</p>
+                </div>
+                <div class="user-profile">
+                    <img src="https://via.placeholder.com/40" style="border-radius: 50%;" alt="Profile">
+                </div>
+            </header>
+
+            <div class="stats-grid">
+                <div class="card stat">
+                    <h3>Appointments Today</h3>
+                    <div class="value">14</div>
+                    <div style="font-size:0.8rem; color:green; margin-top:5px;">↑ 12% vs yesterday</div>
+                </div>
+                <div class="card stat">
+                    <h3>Pending Lab Results</h3>
+                    <div class="value">05</div>
+                    <div style="font-size:0.8rem; color:orange; margin-top:5px;">Needs review</div>
+                </div>
+                <div class="card stat">
+                    <h3>Total Patients</h3>
+                    <div class="value">1,204</div>
+                </div>
+                <div class="card stat">
+                    <h3>Avg Wait Time</h3>
+                    <div class="value">12m</div>
+                    <div style="font-size:0.8rem; color:green; margin-top:5px;">↓ 2m improved</div>
+                </div>
+            </div>
+
+            <div class="timeline-view">
+                <h2>Patient Care Timeline</h2>
+                <div class="card" style="margin-top:10px; border-left:4px solid var(--primary-color);">
+                    <small>09:00 AM</small>
+                    <p><strong>Emma Wilson</strong> - Annual Checkup</p>
+                </div>
+                <div class="card" style="margin-top:10px; border-left:4px solid var(--primary-color);">
+                    <small>10:15 AM</small>
+                    <p><strong>Liam Brown</strong> - Vaccination</p>
+                </div>
+                <div class="card" style="margin-top:10px; border-left:4px solid var(--primary-color);">
+                    <small>11:30 AM</small>
+                    <p><strong>Emergency</strong> - Room 304</p>
+                </div>
+            </div>
+
+            <section class="patient-queue">
+                <h2 style="font-size:1.1rem; margin-bottom:15px;">Upcoming Appointments</h2>
+                <div class="patient-list">
+                    <div class="table-header">
+                        <div>Patient Name</div>
+                        <div>Time</div>
+                        <div>Type</div>
+                        <div>Status</div>
+                    </div>
+                    <div class="table-row">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <div style="width:30px; height:30px; background:#ddd; border-radius:50%;"></div>
+                            Sarah Connor
+                        </div>
+                        <div>09:30 AM</div>
+                        <div>Consultation</div>
+                        <div><span class="status stable">Confirmed</span></div>
+                    </div>
+                     <div class="table-row">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <div style="width:30px; height:30px; background:#ddd; border-radius:50%;"></div>
+                            Michael Ross
+                        </div>
+                        <div>10:00 AM</div>
+                        <div>Follow-up</div>
+                        <div><span class="status critical">Urgent</span></div>
+                    </div>
+                     <div class="table-row">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <div style="width:30px; height:30px; background:#ddd; border-radius:50%;"></div>
+                            Jessica Pearson
+                        </div>
+                        <div>10:45 AM</div>
+                        <div>Therapy</div>
+                        <div><span class="status stable">In Lobby</span></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        function changeTheme(themeClass) {
+            document.body.className = '';
+            document.body.classList.add(themeClass);
+        }
+    </script>
+</body>
+</html>
