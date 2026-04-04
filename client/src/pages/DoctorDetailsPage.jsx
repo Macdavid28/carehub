@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import axios from "../services/api";
-import useAuthStore from "../store/useAuthStore";
+// import useAuthStore from "../store/useAuthStore";
 import Button from "../components/ui/Button";
 import {
   ArrowLeft,
@@ -89,13 +89,13 @@ const DoctorDetailsPage = () => {
           <div className="mb-4">
             {/* Place for Action Button (Book Appointment) if Patient */}
             <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/20 text-white min-w-[200px]">
-              <p className="text-xs text-indigo-200 uppercase tracking-widest font-semibold mb-1">
+              {/* <p className="text-xs text-indigo-200 uppercase tracking-widest font-semibold mb-1">
                 Consultation Fee
-              </p>
-              <p className="text-3xl font-bold flex items-center">
+              </p> */}
+              {/* <p className="text-3xl font-bold flex items-center">
                 <DollarSign className="w-6 h-6 text-green-400 mr-1" />
                 {doctor.fees}
-              </p>
+              </p> */}
             </div>
           </div>
         </div>

@@ -10,16 +10,13 @@ import useAuthStore from "../../store/useAuthStore";
 
 const schema = yup.object({
   name: yup.string().required("Name is required"),
-  gender: yup
-    .string()
-    .oneOf(["Male", "Female", "Other"])
-    .required("Gender is required"),
+  gender: yup.string().oneOf(["Male", "Female"]).required("Gender is required"),
   specialization: yup.string().required("Specialization is required"),
   qualification: yup.string().required("Qualification is required"),
-  fees: yup
-    .number()
-    .typeError("Fees must be a number")
-    .required("Fees is required"),
+  // fees: yup
+  //   .number()
+  //   .typeError("Fees must be a number")
+  //   .required("Fees is required"),
   experience: yup.string().required("Experience is required"),
   about: yup.string().nullable(),
 });
@@ -49,7 +46,7 @@ const EditDoctorProfileForm = ({ onSuccess }) => {
       name: "",
       specialization: "",
       qualification: "",
-      fees: "",
+      // fees: "",
       experience: "",
       about: "",
     },
@@ -62,7 +59,7 @@ const EditDoctorProfileForm = ({ onSuccess }) => {
         name: doctorData.name || "",
         specialization: doctorData.specialization || "",
         qualification: doctorData.qualification || "",
-        fees: doctorData.fees || "",
+        // fees: doctorData.fees || "",
         experience: doctorData.experience || "",
         about: doctorData.about || "",
       });
@@ -112,7 +109,6 @@ const EditDoctorProfileForm = ({ onSuccess }) => {
           <option value="">Select Gender</option>
           <option value="Male">Male</option>
           <option value="Female">Female</option>
-          <option value="Other">Other</option>
         </select>
         {errors.gender && (
           <p className="text-red-500 text-xs mt-1">{errors.gender.message}</p>
@@ -131,12 +127,12 @@ const EditDoctorProfileForm = ({ onSuccess }) => {
         />
       </div>
       <div className="grid grid-cols-2 gap-4">
-        <Input
+        {/*<Input
           label="Consultation Fees ($)"
           type="number"
           {...register("fees")}
           error={errors.fees?.message}
-        />
+        />*/}
         <Input
           label="Experience (Years)"
           {...register("experience")}

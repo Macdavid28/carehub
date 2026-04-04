@@ -22,7 +22,10 @@ export const createDepartment = async (req, res) => {
   try {
     const { name, description, image } = req.body;
 
-    const departmentExists = await Department.findOne({ name });
+    const departmentExists = await Department.findOne({
+      name,
+      isDeleted: false,
+    });
 
     if (departmentExists) {
       return res.status(400).json({ message: "Department already exists" });

@@ -469,6 +469,9 @@ export const signup = async (req, res) => {
         name: patient.name,
         email: patient.email,
         role: "patient",
+        bloodGroup: patient.bloodGroup,
+        contact: patient.contact,
+        gender: patient.gender,
       },
     });
   } catch (error) {
@@ -554,6 +557,12 @@ export const login = async (req, res) => {
         email: user.email,
         role: role,
         profileImage: user.profileImage,
+        bloodGroup: user.bloodGroup,
+        contact: user.contact,
+        address: user.address,
+        gender: user.gender,
+        dateOfBirth: user.dateOfBirth,
+        specialization: user.specialization,
         token,
       },
     });
@@ -781,6 +790,18 @@ export const getUserProfile = async (req, res) => {
         email: user.email,
         role: user.role,
         profileImage: user.profileImage,
+        bloodGroup: user.bloodGroup,
+        contact: user.contact,
+        address: user.address,
+        gender: user.gender,
+        dateOfBirth: user.dateOfBirth,
+        medicalHistory: user.medicalHistory,
+        emergencyContact: user.emergencyContact,
+        insurance: user.insurance,
+        specialization: user.specialization,
+        qualification: user.qualification,
+        experience: user.experience,
+        about: user.about,
       });
     } else {
       res.status(404).json({ success: false, message: "User not found" });
@@ -863,6 +884,9 @@ export const checkAuth = async (req, res) => {
           email: user.email,
           role: user.role,
           profileImage: user.profileImage,
+          bloodGroup: user.bloodGroup,
+          contact: user.contact,
+          gender: user.gender,
         },
       });
     } else {

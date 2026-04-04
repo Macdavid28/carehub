@@ -1,4 +1,5 @@
 import Patient from "../models/patient.model.js";
+import Appointment from "../models/appointment.model.js";
 import bcrypt from "bcryptjs";
 
 // @desc    Get all patients
@@ -6,9 +7,20 @@ import bcrypt from "bcryptjs";
 // @access  Private (Admin/Doctor)
 export const getPatients = async (req, res) => {
   try {
-    const patients = await Patient.find().select("-password");
+    const { myPatients } = req.query;
+    let query = {};
+
+    if (myPatients === "true" && req.user.role === "doctor") {
+      const appointments = await Appointment.find({
+        doctor: req.user._id,
+      }).distinct("patient");
+      query = { _id: { $in: appointments } };
+    }
+
+    const patients = await Patient.find(query).select("-password");
     res.json(patients);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Server Error" });
   }
 };

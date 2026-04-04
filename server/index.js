@@ -1,5 +1,7 @@
-import express from "express";
 import dotenv from "dotenv";
+dotenv.config({ path: "../.env" });
+
+import express from "express";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
 import connectDB from "./config/db.js";
@@ -11,8 +13,7 @@ import appointmentRoutes from "./routes/appointment.routes.js";
 import statsRoutes from "./routes/stats.routes.js";
 import prescriptionRoutes from "./routes/prescription.routes.js";
 import medicalRecordRoutes from "./routes/medical_record.routes.js";
-
-dotenv.config();
+import adminRoutes from "./routes/admin.routes.js";
 
 // Connect to Database
 connectDB();
@@ -27,6 +28,7 @@ app.use(
   }),
 );
 app.use(express.json());
+app.use("/uploads", express.static("uploads"));
 
 // Prevent Caching
 app.use((req, res, next) => {
@@ -47,6 +49,7 @@ app.use("/api", limiter);
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
 app.use("/api/departments", departmentRoutes);
 app.use("/api/doctors", doctorRoutes);
 app.use("/api/patients", patientRoutes);
@@ -69,7 +72,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-const PORT = process.env.SERVER_PORT || 5000;
+const PORT = process.env.SERVER_PORT || 8000;
 
 app.listen(PORT, () => {
   console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);

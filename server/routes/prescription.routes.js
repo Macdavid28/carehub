@@ -8,11 +8,19 @@ import {
   updatePrescription,
 } from "../controllers/prescription.controller.js";
 import { protect, authorize } from "../middleware/authMiddleware.js";
+import { uploadPhoto, resizePhoto } from "../middleware/upload.middleware.js";
 
 const router = express.Router();
 
 router.get("/my-prescriptions", protect, getPatientPrescriptions);
-router.post("/", protect, authorize("doctor"), createPrescription);
+router.post(
+  "/",
+  protect,
+  authorize("doctor"),
+  uploadPhoto,
+  resizePhoto,
+  createPrescription,
+);
 router.patch(
   "/:id/status",
   protect,
@@ -26,6 +34,13 @@ router.get(
   authorize("doctor", "admin"),
   getPrescriptionsByPatientId,
 );
-router.patch("/:id", protect, authorize("doctor"), updatePrescription);
+router.patch(
+  "/:id",
+  protect,
+  authorize("doctor"),
+  uploadPhoto,
+  resizePhoto,
+  updatePrescription,
+);
 
 export default router;

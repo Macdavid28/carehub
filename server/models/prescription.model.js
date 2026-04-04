@@ -51,6 +51,10 @@ const prescriptionSchema = new mongoose.Schema(
       default: Date.now,
     },
     endDate: Date,
+    image: {
+      type: String,
+      default: "",
+    },
   },
   {
     timestamps: true,

@@ -10,10 +10,7 @@ import useAuthStore from "../../store/useAuthStore";
 
 const schema = yup.object({
   name: yup.string().required("Name is required"),
-  gender: yup
-    .string()
-    .oneOf(["Male", "Female", "Other"])
-    .required("Gender is required"),
+  gender: yup.string().oneOf(["Male", "Female"]).required("Gender is required"),
   contact: yup.string().nullable(),
   address: yup.string().nullable(),
   bloodGroup: yup.string().nullable(),
@@ -141,7 +138,6 @@ const EditPatientProfileForm = ({ onSuccess }) => {
             <option value="">Select Gender</option>
             <option value="Male">Male</option>
             <option value="Female">Female</option>
-            <option value="Other">Other</option>
           </select>
           {errors.gender && (
             <p className="text-red-500 text-xs mt-1">{errors.gender.message}</p>

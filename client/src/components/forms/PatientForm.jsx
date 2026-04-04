@@ -11,7 +11,7 @@ const schema = yup
     name: yup.string().required("Name is required"),
     gender: yup
       .string()
-      .oneOf(["Male", "Female", "Other"])
+      .oneOf(["Male", "Female"])
       .required("Gender is required"),
     email: yup.string().email("Invalid email").required("Email is required"),
     password: yup.string().min(6, "Password must be at least 6 characters"),
@@ -63,7 +63,6 @@ const PatientForm = ({ onSuccess }) => {
           <option value="">Select Gender</option>
           <option value="Male">Male</option>
           <option value="Female">Female</option>
-          <option value="Other">Other</option>
         </select>
         {errors.gender && (
           <p className="text-red-500 text-xs mt-1">{errors.gender.message}</p>

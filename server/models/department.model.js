@@ -5,7 +5,6 @@ const departmentSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
-      unique: true,
     },
     description: {
       type: String,
@@ -27,6 +26,11 @@ const departmentSchema = new mongoose.Schema(
   {
     timestamps: true,
   },
+);
+
+departmentSchema.index(
+  { name: 1 },
+  { unique: true, partialFilterExpression: { isDeleted: false } },
 );
 
 const Department = mongoose.model("Department", departmentSchema);

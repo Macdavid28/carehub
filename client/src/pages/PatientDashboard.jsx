@@ -95,7 +95,7 @@ const PatientDashboard = () => {
           <p className="text-primary-50 mb-6">
             Search for specialists and book your consultation today.
           </p>
-          <Link to="/doctors">
+          <Link to="/patient/doctors">
             <Button
               variant="secondary"
               className="w-full bg-white text-primary-600 hover:bg-primary-50"

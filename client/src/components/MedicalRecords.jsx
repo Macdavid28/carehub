@@ -29,9 +29,22 @@ const MedicalRecords = () => {
                 {format(new Date(record.visitDate), "MMMM dd, yyyy")}
               </span>
             </div>
-            <span className="text-sm text-primary-700">
-              Dr. {record.doctor?.name}
-            </span>
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-primary-700">
+                Dr. {record.doctor?.name}
+              </span>
+              <span
+                className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
+                  record.status === "Voided"
+                    ? "bg-red-50 text-red-700 border-red-100"
+                    : record.status === "Amended"
+                      ? "bg-amber-50 text-amber-700 border-amber-100"
+                      : "bg-green-50 text-green-700 border-green-100"
+                }`}
+              >
+                {record.status || "Active"}
+              </span>
+            </div>
           </div>
 
           <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">

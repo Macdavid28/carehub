@@ -1,9 +1,9 @@
-import mongoose from "mongoose";
 import Admin from "../models/admin.model.js";
+import bcryptjs from "bcryptjs";
 import dotenv from "dotenv";
 import connectDB from "../config/db.js";
 
-dotenv.config();
+dotenv.config({ path: "../.env" });
 
 const seedAdmin = async () => {
   try {
@@ -12,16 +12,20 @@ const seedAdmin = async () => {
     const adminExists = await Admin.findOne({ role: "admin" });
 
     if (adminExists) {
-      console.log("Admin already exists");
+      console.log("Admin already exists:", adminExists.email);
     } else {
+      const rawPassword = process.env.PASSWORD || "admin123";
+      const salt = await bcryptjs.genSalt(10);
+      const hashedPassword = await bcryptjs.hash(rawPassword, salt);
+
       const admin = await Admin.create({
         name: process.env.NAME || "Admin",
         email: process.env.EMAIL || "admin@carehub.com",
-        password: process.env.PASSWORD || "admin123",
+        password: hashedPassword,
         role: "admin",
-        isVerified: true,
       });
-      console.log("Admin seeded successfully:", admin.email);
+
+      console.log("✅ Admin seeded successfully:", admin.email);
     }
 
     process.exit(0);
@@ -32,3 +36,4 @@ const seedAdmin = async () => {
 };
 
 seedAdmin();
+

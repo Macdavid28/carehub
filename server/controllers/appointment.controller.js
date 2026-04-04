@@ -56,16 +56,14 @@ export const getAppointments = async (req, res) => {
         .populate("doctor", "name specialization");
     } else if (user.role === "doctor") {
       console.log(` -> Fetching appointments for Doctor: ${user._id}`);
-      appointments = await Appointment.find({ doctor: user._id }).populate(
-        "patient",
-        "name email contact profileImage",
-      );
+      appointments = await Appointment.find({ doctor: user._id })
+        .populate("patient", "name email contact profileImage")
+        .populate("doctor", "name specialization");
     } else if (user.role === "patient") {
       console.log(` -> Fetching appointments for Patient: ${user._id}`);
-      appointments = await Appointment.find({ patient: user._id }).populate(
-        "doctor",
-        "name specialization profileImage fees",
-      );
+      appointments = await Appointment.find({ patient: user._id })
+        .populate("doctor", "name specialization profileImage fees")
+        .populate("patient", "name email contact");
     }
 
     console.log(` -> Found ${appointments?.length || 0} appointments`);

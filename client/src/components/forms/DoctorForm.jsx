@@ -22,7 +22,6 @@ const schema = yup
       .positive()
       .integer()
       .required("Experience is required"),
-    fees: yup.number().positive().required("Fees is required"),
   })
   .required();
 
@@ -131,12 +130,12 @@ const DoctorForm = ({ onSuccess }) => {
         />
       </div>
 
-      <Input
+      {/* <Input
         label="Consultation Fees ($)"
         type="number"
         {...register("fees")}
         error={errors.fees?.message}
-      />
+      /> */}
 
       <div className="flex justify-end pt-4">
         <Button type="submit" isLoading={mutation.isPending}>

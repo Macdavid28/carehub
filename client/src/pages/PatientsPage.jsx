@@ -7,15 +7,16 @@ import Input from "../components/ui/Input";
 import { Link } from "react-router-dom";
 import useAuthStore from "../store/useAuthStore";
 
-const PatientsPage = () => {
+const PatientsPage = ({ scope = "all" }) => {
   const { user } = useAuthStore();
   const [searchTerm, setSearchTerm] = useState("");
   const queryClient = useQueryClient();
 
   const { data: patients, isLoading } = useQuery({
-    queryKey: ["patients"],
+    queryKey: ["patients", scope],
     queryFn: async () => {
-      const { data } = await axios.get("/patients");
+      const url = scope === "mine" ? "/patients?myPatients=true" : "/patients";
+      const { data } = await axios.get(url);
       return data;
     },
   });

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -5,6 +6,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "../../services/api";
 import Button from "../ui/Button";
 import Input from "../ui/Input";
+import { Upload, X } from "lucide-react";
 
 const schema = yup.object({
   medication: yup.string().required("Medication name is required"),
@@ -21,7 +23,10 @@ const schema = yup.object({
 
 const PrescriptionForm = ({ patientId, initialData, onSuccess }) => {
   const queryClient = useQueryClient();
+  const [imageFile, setImageFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(initialData?.image || null);
   const isEditing = !!initialData;
+
   const {
     register,
     handleSubmit,
@@ -43,16 +48,45 @@ const PrescriptionForm = ({ patientId, initialData, onSuccess }) => {
 
   const mutation = useMutation({
     mutationFn: async (data) => {
-      if (isEditing) {
-        return axios.patch(`/prescriptions/${initialData._id}`, data);
+      const formData = new FormData();
+      Object.keys(data).forEach((key) => {
+        if (key === "startDate" && data[key]) {
+          formData.append(key, new Date(data[key]).toISOString());
+        } else {
+          formData.append(key, data[key]);
+        }
+      });
+
+      if (imageFile) {
+        formData.append("image", imageFile);
       }
-      return axios.post("/prescriptions", { ...data, patient: patientId });
+
+      if (!isEditing) {
+        formData.append("patient", patientId);
+      }
+
+      const config = {
+        headers: { "Content-Type": "multipart/form-data" },
+      };
+
+      if (isEditing) {
+        return axios.patch(`/prescriptions/${initialData._id}`, formData, config);
+      }
+      return axios.post("/prescriptions", formData, config);
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["patientPrescriptions", patientId]);
       if (onSuccess) onSuccess();
     },
   });
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
 
   const onSubmit = (data) => {
     mutation.mutate(data);
@@ -94,6 +128,55 @@ const PrescriptionForm = ({ patientId, initialData, onSuccess }) => {
           {...register("refillsRemaining")}
           error={errors.refillsRemaining?.message}
         />
+      </div>
+
+      {/* Prescription Image Upload */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Prescription Image (Optional)
+        </label>
+        <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-primary-400 transition-colors cursor-pointer relative bg-gray-50">
+          {previewUrl ? (
+            <div className="relative group">
+              <img
+                src={
+                  previewUrl.startsWith("blob:")
+                    ? previewUrl
+                    : `http://localhost:8000${previewUrl}`
+                }
+                alt="Prescription preview"
+                className="max-h-48 rounded-lg shadow-sm"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  setImageFile(null);
+                  setPreviewUrl(null);
+                }}
+                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1.5 shadow-md hover:bg-red-600 transition-all"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-1 text-center">
+              <Upload className="mx-auto h-10 w-10 text-gray-400" />
+              <div className="flex text-sm text-gray-600">
+                <label className="relative cursor-pointer font-medium text-primary-600 hover:text-primary-500">
+                  <span>Upload an image</span>
+                  <input
+                    type="file"
+                    className="sr-only"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                  />
+                </label>
+                <p className="pl-1">or drag and drop</p>
+              </div>
+              <p className="text-xs text-gray-500">PNG, JPG up to 5MB</p>
+            </div>
+          )}
+        </div>
       </div>
 
       <div>

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "../services/api";
-import { Pill, RotateCcw, Clock } from "lucide-react";
+import { Pill, RotateCcw, Clock, Image as ImageIcon } from "lucide-react";
 import { format } from "date-fns";
 import Button from "./ui/Button";
 
@@ -29,15 +29,28 @@ const Prescriptions = () => {
                 <div className="p-3 bg-primary-50 rounded-lg">
                   <Pill className="w-6 h-6 text-primary-600" />
                 </div>
-                <span
-                  className={`px-2 py-1 rounded text-xs font-medium ${
-                    script.status === "Active"
-                      ? "bg-green-50 text-green-700"
-                      : "bg-gray-100 text-gray-600"
-                  }`}
-                >
-                  {script.status}
-                </span>
+                <div className="flex flex-col items-end gap-1">
+                  <span
+                    className={`px-2 py-1 rounded text-xs font-medium ${
+                      script.status === "Active"
+                        ? "bg-green-50 text-green-700"
+                        : "bg-gray-100 text-gray-600"
+                    }`}
+                  >
+                    {script.status}
+                  </span>
+                  {script.image && (
+                    <a
+                      href={`http://localhost:8000${script.image}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-1 text-[10px] text-primary-600 hover:text-primary-700 font-bold uppercase tracking-wider"
+                    >
+                      <ImageIcon className="w-3 h-3" />
+                      View Image
+                    </a>
+                  )}
+                </div>
               </div>
               <h3 className="text-lg font-bold text-gray-900 mb-1">
                 {script.medication}

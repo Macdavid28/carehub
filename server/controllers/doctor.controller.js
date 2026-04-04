@@ -47,7 +47,6 @@ export const createDoctor = async (req, res) => {
       department,
       qualification,
       experience,
-      fees,
       availableDays,
       availableTimeStart,
       availableTimeEnd,
@@ -71,13 +70,6 @@ export const createDoctor = async (req, res) => {
       department,
       qualification,
       experience,
-      fees,
-      availableDays,
-      availableTimeStart,
-      availableTimeEnd,
-      experience,
-      fees,
-      gender,
       availableDays,
       availableTimeStart,
       availableTimeEnd,
@@ -86,6 +78,7 @@ export const createDoctor = async (req, res) => {
     });
 
     res.status(201).json({
+      success: true,
       _id: doctor._id,
       name: doctor.name,
       email: doctor.email,
@@ -122,30 +115,27 @@ export const updateDoctor = async (req, res) => {
       department,
       qualification,
       experience,
-      fees,
       availableDays,
       availableTimeStart,
       availableTimeEnd,
       about,
+      profileImage,
     } = req.body;
 
-    // Only allow updating detailed fields. Email/password handled elsewhere.
     doctor.name = name || doctor.name;
     doctor.specialization = specialization || doctor.specialization;
     doctor.department = department || doctor.department;
     doctor.qualification = qualification || doctor.qualification;
-    doctor.experience = experience || doctor.experience;
-    doctor.qualification = qualification || doctor.qualification;
-    doctor.experience = experience || doctor.experience;
-    doctor.fees = fees || doctor.fees;
-    doctor.gender = gender || doctor.gender;
+    doctor.experience = experience !== undefined ? experience : doctor.experience;
     doctor.availableDays = availableDays || doctor.availableDays;
     doctor.availableTimeStart = availableTimeStart || doctor.availableTimeStart;
     doctor.availableTimeEnd = availableTimeEnd || doctor.availableTimeEnd;
     doctor.about = about || doctor.about;
+    doctor.profileImage = profileImage || doctor.profileImage;
 
     const updatedDoctor = await doctor.save();
-    res.json(updatedDoctor);
+    const { password: _, ...doctorData } = updatedDoctor.toObject();
+    res.json({ success: true, doctor: doctorData });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error" });

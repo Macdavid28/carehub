@@ -60,6 +60,7 @@ export const updateMedicalRecord = async (req, res) => {
       id,
       {
         ...req.body,
+        status: "Amended",
         isAmended: true,
         amendedAt: Date.now(),
       },
@@ -86,7 +87,7 @@ export const voidMedicalRecord = async (req, res) => {
         .json({ message: "Not authorized to void this record" });
     }
 
-    record.status = "Voided"; // Assuming schema supports this or we add it.
+    record.status = "Voided";
     // If schema is strict, we might need to add status to model first.
     // Let's assume schema is flexible or I will update model next.
     // Actually, let's append " [VOIDED]" to diagnosis to be safe if status field doesn't exist yet,

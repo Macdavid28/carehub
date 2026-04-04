@@ -24,11 +24,11 @@ const doctorSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    gender: {
-      type: String,
-      enum: ["Male", "Female", "Other"],
-      required: true,
-    },
+    // gender: {
+    //   type: String,
+    //   enum: ["Male", "Female", "Other"],
+    //   required: true,
+    // },
     specialization: {
       type: String,
       required: true,
@@ -44,10 +44,6 @@ const doctorSchema = new mongoose.Schema(
     },
     experience: {
       type: Number, // Years of experience
-      required: true,
-    },
-    fees: {
-      type: Number,
       required: true,
     },
     availableDays: {

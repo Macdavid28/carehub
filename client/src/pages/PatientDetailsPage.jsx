@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "../services/api";
 import Button from "../components/ui/Button";
 import {
@@ -12,12 +13,14 @@ import {
   Activity,
   Plus,
   Pill,
+  Calendar,
+  Trash2,
+  Image as ImageIcon,
 } from "lucide-react";
 import Modal from "../components/ui/Modal";
 import MedicalRecordForm from "../components/forms/MedicalRecordForm";
 import PrescriptionForm from "../components/forms/PrescriptionForm";
 import useAuthStore from "../store/useAuthStore";
-import { useState } from "react";
 
 const PatientDetailsPage = () => {
   const { id } = useParams();
@@ -28,6 +31,8 @@ const PatientDetailsPage = () => {
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [selectedPrescription, setSelectedPrescription] = useState(null);
   const [activeTab, setActiveTab] = useState("overview");
+
+  const queryClient = useQueryClient();
 
   const { data: medicalRecords, isLoading: recordsLoading } = useQuery({
     queryKey: ["patientRecords", id],
@@ -54,10 +59,26 @@ const PatientDetailsPage = () => {
   } = useQuery({
     queryKey: ["patient", id],
     queryFn: async () => {
-      // We might need a specific endpoint or use existing.
-      // Assuming GET /patients/:id exists and is accessible by admin
       const { data } = await axios.get(`/patients/${id}`);
       return data;
+    },
+  });
+
+  const voidRecordMutation = useMutation({
+    mutationFn: async (recordId) => {
+      await axios.patch(`/medical-records/${recordId}/void`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["patientRecords", id]);
+    },
+  });
+
+  const cancelPrescriptionMutation = useMutation({
+    mutationFn: async (prescriptionId) => {
+      await axios.patch(`/prescriptions/${prescriptionId}/cancel`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["patientPrescriptions", id]);
     },
   });
 
@@ -117,7 +138,7 @@ const PatientDetailsPage = () => {
                   {patient.name}
                 </h1>
                 {patient.isVerified && (
-                  <span className="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full font-medium border border-blue-200">
+                  <span className="bg-blue-100 text-blue-700 w-32 text-xs px-2 py-2 rounded-full font-medium border border-blue-200">
                     Verified Patient
                   </span>
                 )}
@@ -202,6 +223,19 @@ const PatientDetailsPage = () => {
                       </span>
                     </div>
                   </div>
+                  <div>
+                    <span className="text-xs text-gray-400 block uppercase tracking-wider font-semibold">
+                      Date of Birth
+                    </span>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Calendar className="w-4 h-4 text-gray-400" />
+                      <span className="text-gray-700 font-medium">
+                        {patient.dateOfBirth
+                          ? new Date(patient.dateOfBirth).toLocaleDateString()
+                          : "N/A"}
+                      </span>
+                    </div>
+                  </div>
                   <div className="md:col-span-2">
                     <span className="text-xs text-gray-400 block uppercase tracking-wider font-semibold">
                       Address
@@ -214,6 +248,30 @@ const PatientDetailsPage = () => {
                     </div>
                   </div>
                 </div>
+              </div>
+
+              {/* Medical History Section */}
+              <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-primary-500" />
+                  Medical History
+                </h3>
+                {patient.medicalHistory?.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {patient.medicalHistory.map((item, idx) => (
+                      <span
+                        key={idx}
+                        className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm border border-gray-200"
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500 italic text-sm">
+                    No medical history provided.
+                  </p>
+                )}
               </div>
 
               {/* Insurance & Emergency Grid */}
@@ -305,20 +363,41 @@ const PatientDetailsPage = () => {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      {record.isAmended && (
-                        <span className="bg-yellow-50 text-yellow-700 text-xs px-2 py-1 rounded-full font-medium border border-yellow-100">
-                          Amended
+                      {record.status && record.status !== "Active" && (
+                        <span
+                          className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
+                            record.status === "Voided"
+                              ? "bg-red-50 text-red-700 border-red-100"
+                              : "bg-yellow-50 text-yellow-700 border-yellow-100"
+                          }`}
+                        >
+                          {record.status}
                         </span>
                       )}
-                      {user?.role === "doctor" && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEditRecord(record)}
-                        >
-                          Edit
-                        </Button>
-                      )}
+                      {user?.role === "doctor" &&
+                        record.status !== "Voided" && (
+                          <div className="flex items-center gap-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEditRecord(record)}
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                              onClick={() => {
+                                if (window.confirm("Void this record?")) {
+                                  voidRecordMutation.mutate(record._id);
+                                }
+                              }}
+                            >
+                              Void
+                            </Button>
+                          </div>
+                        )}
                     </div>
                   </div>
                   <p className="text-gray-600 text-sm leading-relaxed bg-gray-50 p-3 rounded-lg border border-gray-100">
@@ -376,34 +455,74 @@ const PatientDetailsPage = () => {
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
-                      {prescription.isAmended && (
-                        <span className="bg-yellow-50 text-yellow-700 text-xs px-2 py-1 rounded-full font-medium border border-yellow-100">
-                          Amended
+                      {prescription.status && (
+                        <span
+                          className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
+                            prescription.status === "Active"
+                              ? "bg-green-50 text-green-700 border-green-100"
+                              : prescription.status === "Cancelled"
+                                ? "bg-red-50 text-red-700 border-red-100"
+                                : "bg-gray-100 text-gray-600 border-gray-200"
+                          }`}
+                        >
+                          {prescription.status}
                         </span>
                       )}
-                      {user?.role === "doctor" && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEditPrescription(prescription)}
-                        >
-                          Edit
-                        </Button>
-                      )}
+                      {user?.role === "doctor" &&
+                        prescription.status === "Active" && (
+                          <div className="flex items-center gap-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() =>
+                                handleEditPrescription(prescription)
+                              }
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                              onClick={() => {
+                                if (window.confirm("Cancel prescription?")) {
+                                  cancelPrescriptionMutation.mutate(
+                                    prescription._id,
+                                  );
+                                }
+                              }}
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        )}
                     </div>
                   </div>
                   <div className="bg-blue-50 p-3 rounded-lg text-blue-900 text-sm">
                     <span className="font-medium mr-2">Instructions:</span>
                     {prescription.instructions}
                   </div>
-                  <div className="mt-3 flex gap-4 text-xs text-gray-500 font-medium">
-                    <span className="bg-gray-100 px-2 py-1 rounded">
-                      Refills: {prescription.refillsRemaining}
-                    </span>
-                    <span className="bg-gray-100 px-2 py-1 rounded">
-                      Started:{" "}
-                      {new Date(prescription.startDate).toLocaleDateString()}
-                    </span>
+                  <div className="mt-3 flex items-center justify-between">
+                    <div className="flex gap-4 text-xs text-gray-500 font-medium">
+                      <span className="bg-gray-100 px-2 py-1 rounded">
+                        Refills: {prescription.refillsRemaining}
+                      </span>
+                      <span className="bg-gray-100 px-2 py-1 rounded">
+                        Started:{" "}
+                        {new Date(prescription.startDate).toLocaleDateString()}
+                      </span>
+                    </div>
+                    {prescription.image && (
+                      <a
+                        href={`http://localhost:8000${prescription.image}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center gap-1 text-xs text-primary-600 hover:text-primary-700 font-medium"
+                      >
+                        <ImageIcon className="w-3 h-3" />
+                        View Prescription
+                      </a>
+                    )}
                   </div>
                 </div>
               ))}
