@@ -13,17 +13,18 @@ const Input = forwardRef(({ className, label, error, type, ...props }, ref) => {
   return (
     <div className="w-full">
       {label && (
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-semibold text-slate-700 mb-1.5 ml-1">
           {label}
         </label>
       )}
-      <div className="relative">
+      <div className="relative group">
         <input
           type={isPasswordType ? (showPassword ? "text" : "password") : type}
           className={cn(
-            "flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50",
-            error && "border-red-500 focus:ring-red-500",
-            isPasswordType && "pr-10", // Add padding for icon
+            "flex h-11 w-full rounded-2xl border border-slate-200 bg-white/50 px-4 py-2 text-sm transition-all duration-200 placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 focus:bg-white disabled:cursor-not-allowed disabled:opacity-50",
+            error &&
+              "border-rose-500 focus:ring-rose-500/10 focus:border-rose-500",
+            isPasswordType && "pr-12",
             className,
           )}
           ref={ref}
@@ -33,17 +34,19 @@ const Input = forwardRef(({ className, label, error, type, ...props }, ref) => {
           <button
             type="button"
             onClick={togglePasswordVisibility}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none"
           >
             {showPassword ? (
-              <EyeOff className="h-4 w-4" />
+              <EyeOff className="h-5 w-5" />
             ) : (
-              <Eye className="h-4 w-4" />
+              <Eye className="h-5 w-5" />
             )}
           </button>
         )}
       </div>
-      {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
+      {error && (
+        <p className="mt-1.5 ml-1 text-xs font-medium text-rose-500">{error}</p>
+      )}
     </div>
   );
 });

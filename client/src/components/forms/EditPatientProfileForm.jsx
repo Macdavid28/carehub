@@ -7,6 +7,7 @@ import axios from "../../services/api";
 import Button from "../ui/Button";
 import Input from "../ui/Input";
 import useAuthStore from "../../store/useAuthStore";
+import { toast } from "react-hot-toast";
 
 const schema = yup.object({
   name: yup.string().required("Name is required"),
@@ -100,9 +101,13 @@ const EditPatientProfileForm = ({ onSuccess }) => {
       return updatedProfile;
     },
     onSuccess: (data) => {
-      setUser({ ...user, ...data }); // Update auth store as well for header name etc
-      queryClient.invalidateQueries(["patientProfile"]);
+      setUser(data); // data is the updated profile from backend
+      queryClient.invalidateQueries(["patientProfile", user?._id]);
+      toast.success("Profile updated successfully!");
       if (onSuccess) onSuccess();
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.message || "Failed to update profile");
     },
   });
 

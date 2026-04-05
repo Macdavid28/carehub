@@ -15,7 +15,9 @@ import Button from "../components/ui/Button";
 import AppointmentActions from "../components/AppointmentActions";
 import useAuthStore from "../store/useAuthStore";
 import EditDoctorProfileForm from "../components/forms/EditDoctorProfileForm";
-import PatientsPage from "./PatientsPage"; // Reusing the PatientsPage (if it exists) or we build a simpler list here directly.
+import PatientsPage from "./PatientsPage";
+import { motion } from "framer-motion";
+import { cn } from "../lib/utils";
 // Ideally, we just render the PatientsPage component if the route matches, but since we are doing tabs in dashboard:
 // Let's create a local PatientList specific for "My Patients" if needed,
 // OR just link to the main /doctor/patients route.
@@ -38,7 +40,11 @@ const DoctorDashboard = () => {
     enabled: !!user?._id,
   });
 
-  if (isLoading) return <div className="p-8">Loading dashboard...</div>;
+  if (isLoading) return (
+    <div className="flex items-center justify-center min-h-[400px]">
+       <div className="w-12 h-12 border-4 border-primary-100 border-t-primary-600 rounded-full animate-spin"></div>
+    </div>
+  );
 
   const today = new Date().toDateString();
   const todayAppointments =
@@ -53,23 +59,23 @@ const DoctorDashboard = () => {
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="space-y-10 animate-in">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            Welcome, Dr. {user?.name}
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">
+            Welcome back, <span className="text-primary-600">Dr. {user?.name}</span>
           </h1>
-          <p className="text-gray-500">Manage your practice.</p>
+          <p className="text-slate-500 font-medium italic">Ready to make a difference in your patients' lives today?</p>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           <Button
             variant="outline"
+            className="rounded-2xl border-slate-200 text-slate-600 hover:text-primary-600"
             onClick={() => setIsPasswordModalOpen(true)}
-            className="flex items-center gap-2"
           >
-            <Lock className="w-4 h-4" />
-            Change Password
+            <Lock className="w-4 h-4 mr-2" />
+            Security
           </Button>
         </div>
       </div>
@@ -79,26 +85,50 @@ const DoctorDashboard = () => {
         onClose={() => setIsPasswordModalOpen(false)}
       />
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden min-h-[500px]">
-        <div className="border-b border-gray-100 overflow-x-auto">
-          <nav className="flex space-x-1 p-4" aria-label="Tabs">
+      {/* Stats Section */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {[
+          { label: "Today's Appointments", value: todayAppointments.length, icon: Calendar, color: "bg-indigo-50 text-indigo-600", border: "border-indigo-100" },
+          { label: "Pending Requests", value: appointments?.filter((a) => a.status === "Pending").length || 0, icon: Clock, color: "bg-amber-50 text-amber-600", border: "border-amber-100" },
+          { label: "Completed Visits", value: appointments?.filter((a) => a.status === "Completed").length || 0, icon: Users, color: "bg-emerald-50 text-emerald-600", border: "border-emerald-100" },
+        ].map((stat, i) => (
+          <motion.div 
+            key={stat.label}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.1 }}
+            className={cn("premium-card p-8 flex flex-col items-start gap-4", stat.border)}
+          >
+            <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center shadow-inner", stat.color)}>
+               <stat.icon className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">{stat.label}</p>
+              <h3 className="text-4xl font-black text-slate-900 mt-1">{stat.value}</h3>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      <div className="premium-card p-0 overflow-hidden !rounded-[3rem]">
+        <div className="bg-slate-50/50 border-b border-slate-100 p-3">
+          <nav className="flex gap-2" aria-label="Tabs">
             {tabs.map((tab) => {
               const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`
-                                flex items-center px-4 py-2 text-sm font-medium rounded-lg whitespace-nowrap
-                                ${
-                                  activeTab === tab.id
-                                    ? "bg-primary-50 text-primary-700"
-                                    : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
-                                }
-                            `}
+                  className={cn(
+                    "flex items-center px-6 py-3.5 text-sm font-bold rounded-[1.5rem] transition-all duration-300",
+                    isActive
+                      ? "bg-white text-primary-600 shadow-xl shadow-slate-200/50 scale-105"
+                      : "text-slate-400 hover:text-slate-600 hover:bg-white/50"
+                  )}
                 >
                   <Icon
-                    className={`w-4 h-4 mr-2 ${activeTab === tab.id ? "text-primary-600" : "text-gray-400"}`}
+                    className={cn("w-4 h-4 mr-2.5 transition-transform duration-300", isActive ? "scale-110 text-primary-500" : "text-slate-300")}
                   />
                   {tab.label}
                 </button>
@@ -107,84 +137,92 @@ const DoctorDashboard = () => {
           </nav>
         </div>
 
-        <div className="p-6">
+        <div className="p-8 md:p-12">
           {activeTab === "overview" && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                  <h3 className="text-gray-500 font-medium">
-                    Today's Appointments
-                  </h3>
-                  <p className="text-3xl font-bold text-gray-900 mt-2">
-                    {todayAppointments.length}
-                  </p>
-                </div>
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                  <h3 className="text-gray-500 font-medium">
-                    Pending Requests
-                  </h3>
-                  <p className="text-3xl font-bold text-orange-600 mt-2">
-                    {appointments?.filter((a) => a.status === "Pending")
-                      .length || 0}
-                  </p>
-                </div>
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                  <h3 className="text-gray-500 font-medium">Completed Total</h3>
-                  <p className="text-3xl font-bold text-green-600 mt-2">
-                    {appointments?.filter((a) => a.status === "Completed")
-                      .length || 0}
-                  </p>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="p-6 border-b border-gray-100">
-                  <h2 className="text-lg font-bold text-gray-900">
-                    Upcoming Appointments
-                  </h2>
-                </div>
-                <div className="divide-y divide-gray-100">
-                  {appointments?.length > 0 ? (
-                    appointments.slice(0, 5).map((apt) => (
-                      <div
-                        key={apt._id}
-                        className="p-6 flex items-center justify-between hover:bg-gray-50"
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold">
-                            {apt.patient?.name.charAt(0)}
-                          </div>
-                          <div>
-                            <h4 className="font-medium text-gray-900">
-                              {apt.patient?.name}
-                            </h4>
-                            <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
-                              <Calendar className="w-4 h-4" />
-                              {format(new Date(apt.date), "MMM dd, yyyy")}
-                              <Clock className="w-4 h-4 ml-2" />
-                              {apt.time}
+            <motion.div 
+               initial={{ opacity: 0, x: 20 }}
+               animate={{ opacity: 1, x: 0 }}
+               className="space-y-10"
+            >
+              <div className="flex flex-col lg:flex-row gap-8">
+                <div className="flex-1 space-y-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">
+                      Upcoming Patient Visits
+                    </h3>
+                    <div className="w-10 h-1 bg-primary-100 rounded-full"></div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    {appointments?.length > 0 ? (
+                      appointments.slice(0, 10).map((apt) => (
+                        <div
+                          key={apt._id}
+                          className="group flex flex-col sm:flex-row sm:items-center justify-between p-6 bg-slate-50/50 hover:bg-white rounded-[2rem] border border-transparent hover:border-slate-100 transition-all duration-300 shadow-none hover:shadow-xl hover:shadow-slate-200/50"
+                        >
+                          <div className="flex items-center gap-5">
+                            <div className="w-14 h-14 rounded-[1.2rem] bg-white shadow-sm border border-slate-100 flex items-center justify-center text-primary-600 group-hover:bg-primary-600 group-hover:text-white transition-all duration-500">
+                               <User className="w-6 h-6" />
+                            </div>
+                            <div>
+                              <h4 className="font-black text-slate-900 text-lg">
+                                {apt.patient?.name}
+                              </h4>
+                              <div className="flex items-center gap-3 text-xs font-bold text-slate-400 mt-1">
+                                <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {format(new Date(apt.date), "MMM dd")}</span>
+                                <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {apt.time}</span>
+                              </div>
                             </div>
                           </div>
+                          
+                          <div className="mt-4 sm:mt-0">
+                            <AppointmentActions
+                              appointment={apt}
+                              userRole="doctor"
+                            />
+                          </div>
                         </div>
-                        <AppointmentActions
-                          appointment={apt}
-                          userRole="doctor"
-                        />
+                      ))
+                    ) : (
+                      <div className="p-20 text-center flex flex-col items-center bg-slate-50/30 rounded-[3rem] border-2 border-dashed border-slate-100">
+                        <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-slate-200 mb-6 shadow-sm">
+                           <Calendar className="w-10 h-10" />
+                        </div>
+                        <p className="text-slate-400 font-bold text-lg">Your schedule is clear today.</p>
+                        <p className="text-slate-300 text-sm mt-1">Excellent time to catch up on medical records.</p>
                       </div>
-                    ))
-                  ) : (
-                    <div className="p-8 text-center text-gray-500">
-                      No appointments found.
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
+                
+                {/* Side info or Mini profile card could go here */}
               </div>
-            </div>
+            </motion.div>
           )}
 
-          {activeTab === "patients" && <PatientsPage scope="mine" />}
-
-          {activeTab === "profile" && <EditDoctorProfileForm />}
+          {activeTab === "patients" && (
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
+               <PatientsPage scope="mine" />
+            </motion.div>
+          )}
+ 
+          {activeTab === "profile" && (
+             <motion.div 
+                initial={{ opacity: 0, x: 20 }} 
+                animate={{ opacity: 1, x: 0 }}
+                className="max-w-4xl"
+             >
+                <div className="flex items-center gap-4 mb-10">
+                   <div className="w-1.5 h-10 bg-primary-600 rounded-full"></div>
+                   <h3 className="text-3xl font-black text-slate-900">
+                      Medical Profile
+                   </h3>
+                </div>
+                <div className="px-2">
+                   <EditDoctorProfileForm />
+                </div>
+             </motion.div>
+          )}
         </div>
       </div>
     </div>

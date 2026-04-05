@@ -7,6 +7,7 @@ import axios from "../../services/api";
 import Button from "../ui/Button";
 import Input from "../ui/Input";
 import useAuthStore from "../../store/useAuthStore";
+import { toast } from "react-hot-toast";
 
 const schema = yup.object({
   name: yup.string().required("Name is required"),
@@ -22,7 +23,7 @@ const schema = yup.object({
 });
 
 const EditDoctorProfileForm = ({ onSuccess }) => {
-  const { user } = useAuthStore();
+  const { user, setUser } = useAuthStore();
   const queryClient = useQueryClient();
 
   // Fetch latest data to ensure admin updates are seen by doctor
@@ -74,10 +75,15 @@ const EditDoctorProfileForm = ({ onSuccess }) => {
       );
       return updatedDoctor;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries(["doctorProfile"]);
-      queryClient.invalidateQueries(["doctors"]); // Update public list
+    onSuccess: (data) => {
+      setUser(data);
+      queryClient.invalidateQueries(["doctorProfile", user?._id]);
+      queryClient.invalidateQueries(["doctors"]);
+      toast.success("Profile updated successfully!");
       if (onSuccess) onSuccess();
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.message || "Failed to update profile");
     },
   });
 

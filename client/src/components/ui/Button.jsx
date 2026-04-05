@@ -11,13 +11,15 @@ const Button = ({
 }) => {
   const variants = {
     primary:
-      "bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500",
+      "bg-primary-600 text-white hover:bg-primary-700 shadow-lg shadow-primary-200/40 hover:shadow-primary-300/60 active:scale-[0.98]",
     secondary:
-      "bg-secondary-600 text-white hover:bg-secondary-700 focus:ring-secondary-500",
+      "bg-teal-600 text-white hover:bg-teal-700 shadow-lg shadow-teal-200/40 hover:shadow-teal-300/60 active:scale-[0.98]",
     outline:
-      "border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 focus:ring-primary-500",
-    ghost: "text-gray-700 hover:bg-gray-100 focus:ring-gray-500",
-    danger: "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500",
+      "border-2 border-slate-200 text-slate-700 bg-white hover:border-primary-200 hover:bg-primary-50 active:scale-[0.98]",
+    ghost:
+      "text-slate-600 hover:bg-slate-100 hover:text-slate-900 active:scale-[0.98]",
+    danger:
+      "bg-rose-500 text-white hover:bg-rose-600 shadow-lg shadow-rose-200/40 active:scale-[0.98]",
   };
 
   const sizes = {

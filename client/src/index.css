@@ -4,6 +4,55 @@
 
 @layer base {
   body {
-    @apply bg-primary-50 text-gray-900 antialiased;
+    @apply bg-slate-50 text-slate-900 antialiased font-sans selection:bg-primary-100 selection:text-primary-900;
   }
 }
+
+@layer components {
+  .glass-sidebar {
+    @apply bg-white/70 backdrop-blur-xl border-r border-slate-200/50;
+  }
+
+  .glass-navbar {
+    @apply bg-white/60 backdrop-blur-md border-b border-white/40 shadow-sm sticky top-0 z-50;
+  }
+
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-md border border-white/40 shadow-xl shadow-slate-200/40 rounded-3xl p-6 transition-all duration-300;
+  }
+
+  .premium-card {
+    @apply bg-white rounded-[2rem] border border-slate-100 shadow-[0_8px_40px_rgba(0,0,0,0.03)] transition-all duration-300 hover:shadow-[0_20px_60px_rgba(0,0,0,0.06)] hover:-translate-y-1;
+  }
+
+  .hms-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
+  }
+
+  .hms-gradient-blue {
+    @apply bg-gradient-to-br from-blue-500 to-indigo-700;
+  }
+
+  .hms-gradient-teal {
+    @apply bg-gradient-to-br from-teal-400 to-teal-600;
+  }
+
+  .nav-item-active {
+    @apply bg-primary-50 text-primary-700 shadow-[0_4px_12px_rgba(14,165,233,0.1)] font-bold;
+  }
+
+  .animate-in {
+    @apply animate-fade-in;
+  }
+
+  .shimmer {
+    @apply relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent;
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+

@@ -13,6 +13,9 @@ import Prescriptions from "../components/Prescriptions";
 import MedicalRecords from "../components/MedicalRecords";
 import { Link } from "react-router-dom";
 import EditPatientProfileForm from "../components/forms/EditPatientProfileForm";
+import { cn } from "../lib/utils";
+import { motion } from "framer-motion";
+import { toast } from "react-hot-toast";
 
 const PatientDashboard = () => {
   const [activeTab, setActiveTab] = useState("appointments");
@@ -37,95 +40,123 @@ const PatientDashboard = () => {
     { id: "profile", label: "Profile", icon: User },
   ];
 
-  if (isLoading) return <div className="p-8">Loading...</div>;
+  if (isLoading) return (
+    <div className="flex items-center justify-center min-h-[400px]">
+       <div className="w-12 h-12 border-4 border-primary-100 border-t-primary-600 rounded-full animate-spin"></div>
+    </div>
+  );
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="space-y-10 animate-in">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            Welcome, {user?.name?.split(" ")[0]}
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">
+            Welcome back, <span className="text-primary-600">{user?.name?.split(" ")[0]}!</span>
           </h1>
-          <p className="text-gray-500">Manage your health and appointments.</p>
+          <p className="text-slate-500 font-medium italic">Empowering your health journey every day.</p>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           <Button
             variant="outline"
+            className="rounded-2xl border-slate-200 text-slate-600 hover:text-primary-600"
             onClick={() => setIsPasswordModalOpen(true)}
           >
             <Lock className="w-4 h-4 mr-2" />
-            Change Password
+            Security
           </Button>
-          <Button onClick={() => setIsModalOpen(true)}>
+          <Button 
+            className="rounded-2xl hms-gradient-blue shadow-lg shadow-primary-200"
+            onClick={() => setIsModalOpen(true)}
+          >
             <FolderPlus className="w-4 h-4 mr-2" />
-            Book Appointment
+            Book Visit
           </Button>
         </div>
       </div>
 
-      <ChangePasswordModal
-        isOpen={isPasswordModalOpen}
-        onClose={() => setIsPasswordModalOpen(false)}
-      />
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">My Status</h2>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-              <span className="text-gray-600">Blood Group</span>
-              <span className="font-bold text-gray-900">
+      {/* Quick Stats & Action Cards */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="premium-card p-8 flex flex-col justify-between"
+        >
+          <div>
+            <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 mb-6 shadow-inner">
+               <User className="w-6 h-6" />
+            </div>
+            <h2 className="text-xl font-black text-slate-900 mb-2">My Health Key</h2>
+            <p className="text-slate-400 text-sm font-medium mb-6 leading-relaxed">Quick overview of your vital information.</p>
+          </div>
+          
+          <div className="space-y-3">
+            <div className="flex justify-between items-center p-4 bg-slate-50 rounded-2xl border border-slate-100">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Blood Type</span>
+              <span className="px-3 py-1 bg-rose-50 text-rose-600 rounded-xl font-black text-sm">
                 {user?.bloodGroup || "Not set"}
               </span>
             </div>
-            <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-              <span className="text-gray-600">Next Appointment</span>
-              <span className="font-bold text-primary-600">
+            <div className="flex justify-between items-center p-4 bg-slate-50 rounded-2xl border border-slate-100">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Next Appointment</span>
+              <span className="font-black text-primary-600 text-sm">
                 {appointments?.[0]
                   ? format(new Date(appointments[0].date), "MMM dd")
                   : "None"}
               </span>
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="bg-primary-500 rounded-xl shadow-sm p-6 text-white bg-gradient-to-br from-primary-400 to-primary-600">
-          <h2 className="text-xl font-bold mb-2">Find a Doctor</h2>
-          <p className="text-primary-50 mb-6">
-            Search for specialists and book your consultation today.
-          </p>
-          <Link to="/patient/doctors">
-            <Button
-              variant="secondary"
-              className="w-full bg-white text-primary-600 hover:bg-primary-50"
-            >
-              Search Doctors
-            </Button>
-          </Link>
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="lg:col-span-2 hms-gradient-blue rounded-[2.5rem] p-10 text-white relative overflow-hidden shadow-2xl shadow-primary-200"
+        >
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary-400/20 rounded-full -ml-24 -mb-24 blur-2xl"></div>
+          
+          <div className="relative z-10 h-full flex flex-col justify-between">
+            <div className="max-w-md">
+              <h2 className="text-4xl font-black mb-4 leading-tight">Connect with Top Specialists</h2>
+              <p className="text-primary-100 text-lg font-medium opacity-90 leading-relaxed mb-8">
+                Your health deserves the best care. Schedule a consultation with our world-class medical team.
+              </p>
+            </div>
+            <Link to="/patient/doctors" className="w-fit">
+              <Button
+                variant="secondary"
+                className="bg-white text-primary-700 hover:bg-primary-50 px-8 py-4 rounded-2xl font-black text-base shadow-xl shadow-black/10 active:scale-95"
+              >
+                Search Doctors <Calendar className="ml-2 w-5 h-5" />
+              </Button>
+            </Link>
+          </div>
+        </motion.div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden min-h-[500px]">
-        <div className="border-b border-gray-100 overflow-x-auto">
-          <nav className="flex space-x-1 p-4" aria-label="Tabs">
+      {/* Detailed Tabs Section */}
+      <div className="premium-card p-0 overflow-hidden !rounded-[3rem]">
+        <div className="bg-slate-50/50 border-b border-slate-100 p-3">
+          <nav className="flex gap-2" aria-label="Tabs">
             {tabs.map((tab) => {
               const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`
-                                flex items-center px-4 py-2 text-sm font-medium rounded-lg whitespace-nowrap
-                                ${
-                                  activeTab === tab.id
-                                    ? "bg-primary-50 text-primary-700"
-                                    : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
-                                }
-                            `}
+                  className={cn(
+                    "flex items-center px-6 py-3.5 text-sm font-bold rounded-[1.5rem] transition-all duration-300",
+                    isActive
+                      ? "bg-white text-primary-600 shadow-xl shadow-slate-200/50 scale-105"
+                      : "text-slate-400 hover:text-slate-600 hover:bg-white/50"
+                  )}
                 >
                   <Icon
-                    className={`w-4 h-4 mr-2 ${activeTab === tab.id ? "text-primary-600" : "text-gray-400"}`}
+                    className={cn("w-4 h-4 mr-2.5 transition-transform duration-300", isActive ? "scale-110 text-primary-500" : "text-slate-300")}
                   />
                   {tab.label}
                 </button>
@@ -134,33 +165,45 @@ const PatientDashboard = () => {
           </nav>
         </div>
 
-        <div className="p-6">
+        <div className="p-8 md:p-12">
           {activeTab === "appointments" && (
-            <div className="space-y-4">
+            <motion.div 
+               initial={{ opacity: 0, x: 20 }}
+               animate={{ opacity: 1, x: 0 }}
+               className="space-y-6"
+            >
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-bold text-gray-900">
-                  Upcoming Appointments
+                <h3 className="text-2xl font-black text-slate-900">
+                  Upcoming Consultations
                 </h3>
+                <div className="w-10 h-1 bg-primary-100 rounded-full"></div>
               </div>
-              <div className="divide-y divide-gray-100">
+              
+              <div className="space-y-4">
                 {appointments?.length > 0 ? (
                   appointments.map((apt) => (
                     <div
                       key={apt._id}
-                      className="py-4 flex flex-col sm:flex-row sm:items-center justify-between hover:bg-gray-50 rounded-lg p-2 transition-colors"
+                      className="group flex flex-col sm:flex-row sm:items-center justify-between p-6 bg-slate-50/50 hover:bg-white rounded-[2rem] border border-transparent hover:border-slate-100 transition-all duration-300 shadow-none hover:shadow-xl hover:shadow-slate-200/50"
                     >
-                      <div className="mb-2 sm:mb-0">
-                        <h4 className="font-medium text-gray-900">
-                          Dr. {apt.doctor?.name}
-                        </h4>
-                        <p className="text-sm text-gray-500">{apt.reason}</p>
-                      </div>
-                      <div className="text-left sm:text-right flex items-center gap-4">
+                      <div className="flex items-center gap-5 mb-4 sm:mb-0">
+                        <div className="w-14 h-14 rounded-2xl bg-white shadow-sm border border-slate-100 flex items-center justify-center text-primary-600 group-hover:bg-primary-600 group-hover:text-white transition-all duration-300">
+                           <User className="w-6 h-6" />
+                        </div>
                         <div>
-                          <p className="font-medium text-gray-900">
+                          <h4 className="font-black text-slate-900 text-lg">
+                            Dr. {apt.doctor?.name}
+                          </h4>
+                          <p className="text-sm font-bold text-slate-400">{apt.reason}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-6">
+                        <div className="text-right">
+                          <p className="font-black text-slate-900 text-base">
                             {format(new Date(apt.date), "MMM dd, yyyy")}
                           </p>
-                          <p className="text-sm text-gray-500">{apt.time}</p>
+                          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{apt.time}</p>
                         </div>
                         <AppointmentActions
                           appointment={apt}
@@ -170,26 +213,52 @@ const PatientDashboard = () => {
                     </div>
                   ))
                 ) : (
-                  <div className="p-8 text-center text-gray-500">
-                    No appointments history.
+                  <div className="p-20 text-center flex flex-col items-center">
+                    <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-200 mb-6">
+                       <Calendar className="w-10 h-10" />
+                    </div>
+                    <p className="text-slate-400 font-bold text-lg">No upcoming consultations found.</p>
+                    <p className="text-slate-300 text-sm mt-2">Book an appointment to get started.</p>
                   </div>
                 )}
               </div>
-            </div>
+            </motion.div>
           )}
 
-          {activeTab === "prescriptions" && <Prescriptions />}
-          {activeTab === "records" && <MedicalRecords />}
+          {activeTab === "prescriptions" && (
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
+               <Prescriptions />
+            </motion.div>
+          )}
+          {activeTab === "records" && (
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
+               <MedicalRecords />
+            </motion.div>
+          )}
           {activeTab === "profile" && (
-            <div className="max-w-2xl">
-              <h3 className="text-lg font-bold text-gray-900 mb-6">
-                Profile Settings
-              </h3>
-              <EditPatientProfileForm />
-            </div>
+            <motion.div 
+               initial={{ opacity: 0, x: 20 }} 
+               animate={{ opacity: 1, x: 0 }}
+               className="max-w-4xl"
+            >
+              <div className="flex items-center gap-4 mb-10">
+                 <div className="w-1.5 h-10 bg-primary-600 rounded-full"></div>
+                 <h3 className="text-3xl font-black text-slate-900">
+                    Security & Profile
+                 </h3>
+              </div>
+              <div className="px-2">
+                <EditPatientProfileForm />
+              </div>
+            </motion.div>
           )}
         </div>
       </div>
+
+      <ChangePasswordModal
+        isOpen={isPasswordModalOpen}
+        onClose={() => setIsPasswordModalOpen(false)}
+      />
 
       <Modal
         title="Book Appointment"

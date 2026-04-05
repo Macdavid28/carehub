@@ -12,6 +12,9 @@ import {
   Search,
   Menu,
   X,
+  Bell,
+  ChevronRight,
+  Stethoscope,
 } from "lucide-react";
 import { cn } from "../lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
@@ -68,9 +71,9 @@ const Layout = () => {
   );
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-[#f8fafc]">
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-64 bg-white shadow-md border-r border-gray-100">
+      <aside className="hidden md:flex flex-col w-72 glass-sidebar">
         <SidebarContent
           user={user}
           handleLogout={handleLogout}
@@ -89,7 +92,7 @@ const Layout = () => {
             onClick={() => setIsMobileMenuOpen(false)}
           />
           {/* Sidebar Panel */}
-          <aside className="absolute left-0 top-0 bottom-0 w-64 bg-white shadow-xl flex flex-col">
+          <aside className="absolute left-4 top-4 bottom-4 w-72 glass-card flex flex-col shadow-2xl p-0 overflow-hidden">
             <SidebarContent
               user={user}
               handleLogout={handleLogout}
@@ -103,27 +106,51 @@ const Layout = () => {
       )}
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="bg-white shadow-sm h-16 flex items-center px-4 md:px-6 justify-between border-b gap-4 z-10 relative">
+      <div className="flex-1 flex flex-col overflow-hidden relative">
+        <header className="glass-navbar h-20 flex items-center px-6 md:px-10 justify-between gap-4">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsMobileMenuOpen(true)}
-              className="md:hidden p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+              className="md:hidden p-2.5 -ml-2 text-slate-600 hover:bg-white rounded-xl shadow-sm transition-all active:scale-95"
             >
               <Menu className="w-6 h-6" />
             </button>
-            <h1 className="text-xl font-bold text-primary-600 md:hidden">
-              CareHub
-            </h1>
+            <div className="flex items-center gap-3 md:hidden">
+              <div className="w-8 h-8 rounded-xl bg-primary-600 flex items-center justify-center text-white font-bold">C</div>
+              <h1 className="text-xl font-black text-slate-900 tracking-tight">CareHub</h1>
+            </div>
+            
+            <div className="hidden md:block">
+               <h2 className="text-lg font-bold text-slate-800">
+                 {navItems.find(item => location.pathname.startsWith(item.path))?.label || "General"}
+               </h2>
+            </div>
           </div>
 
-          <div className="flex-1 max-w-xl mx-auto hidden md:block">
-            {/* <GlobalSearch role={user?.role} /> */}
+          <div className="flex items-center gap-4">
+            <button className="p-2.5 text-slate-400 hover:text-slate-600 hover:bg-white rounded-xl transition-all relative group">
+              <Bell className="w-5 h-5 text-slate-500" />
+              <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-white group-hover:scale-110 transition-transform"></span>
+            </button>
+            
+            <div className="h-8 w-[1px] bg-slate-200 mx-2 hidden sm:block"></div>
+            
+            <div className="flex items-center gap-3 pl-2 group cursor-pointer">
+               <div className="hidden sm:block text-right">
+                  <p className="text-xs font-bold text-slate-900">{user?.name}</p>
+                  <p className="text-[10px] font-medium text-slate-400 capitalize">{user?.role}</p>
+               </div>
+               <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold shadow-lg shadow-primary-200 ring-2 ring-white overflow-hidden group-hover:ring-primary-100 transition-all">
+                   {user?.name?.charAt(0).toUpperCase()}
+               </div>
+            </div>
           </div>
         </header>
 
-        <main className="flex-1 overflow-auto p-4 md:p-8">
-          <Outlet />
+        <main className="flex-1 overflow-auto p-6 md:p-10 scroll-smooth">
+          <div className="max-w-7xl mx-auto animate-in">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>
@@ -138,62 +165,79 @@ const SidebarContent = ({
   setIsMobileMenuOpen,
   isMobile,
 }) => (
-  <>
-    <div className="p-6 border-b flex justify-between items-center">
-      <h1 className="text-2xl font-bold text-primary-600 flex items-center gap-2">
-        CareHub
-      </h1>
-      {/* Close button for mobile only */}
+  <div className="flex flex-col h-full">
+    <div className="p-8 pb-6 flex justify-between items-center">
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 rounded-2xl bg-primary-600 flex items-center justify-center text-white font-black text-xl shadow-xl shadow-primary-100 ring-4 ring-primary-50">C</div>
+        <h1 className="text-2xl font-black text-slate-900 tracking-tight">
+          CareHub
+        </h1>
+      </div>
       {isMobile && (
         <button
           onClick={() => setIsMobileMenuOpen(false)}
-          className="md:hidden p-1 rounded-md hover:bg-gray-100 text-gray-500"
+          className="p-2 rounded-xl bg-slate-100 text-slate-500 hover:bg-slate-200"
         >
-          <X className="w-6 h-6" />
+          <X className="w-5 h-5" />
         </button>
       )}
     </div>
 
-    <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-      {filteredNav.map((item) => (
-        <Link
-          key={item.path}
-          to={item.path}
-          onClick={() => setIsMobileMenuOpen(false)}
-          className={cn(
-            "flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors",
-            location.pathname.startsWith(item.path)
-              ? "bg-primary-50 text-primary-700"
-              : "text-gray-600 hover:bg-gray-100",
-          )}
-        >
-          <item.icon className="w-5 h-5" />
-          {item.label}
-        </Link>
-      ))}
-    </nav>
+    <div className="px-6 py-4">
+       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4 ml-4">Main Menu</p>
+       <nav className="space-y-1.5">
+        {filteredNav.map((item) => {
+          const isActive = location.pathname.startsWith(item.path);
+          return (
+            <Link
+              key={item.path}
+              to={item.path}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={cn(
+                "group flex items-center justify-between px-4 py-3.5 text-sm font-bold rounded-2xl transition-all duration-300",
+                isActive
+                  ? "nav-item-active"
+                  : "text-slate-500 hover:bg-white hover:text-slate-900 hover:shadow-md hover:shadow-slate-200/50"
+              )}
+            >
+              <div className="flex items-center gap-3">
+                <item.icon className={cn("w-5 h-5 transition-transform duration-300 group-hover:scale-110", isActive ? "text-primary-600" : "text-slate-400 group-hover:text-primary-500")} />
+                <span>{item.label}</span>
+              </div>
+              {isActive && <ChevronRight className="w-4 h-4 opacity-50" />}
+            </Link>
+          );
+        })}
+      </nav>
+    </div>
 
-    <div className="p-4 border-t">
-      <div className="flex items-center gap-3 mb-4 px-4">
-        <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold">
-          {user?.name?.charAt(0).toUpperCase()}
-        </div>
-        <div className="overflow-hidden">
-          <p className="text-sm font-medium text-gray-900 truncate">
-            {user?.name}
-          </p>
-          <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
+    <div className="mt-auto px-6 py-8">
+      <div className="glass-card p-4 !rounded-[2rem] bg-gradient-to-br from-slate-900 to-slate-800 border-none shadow-2xl relative overflow-hidden group">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/20 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-primary-500/30 transition-all duration-500"></div>
+        <div className="relative z-10 flex flex-col items-center text-center">
+            <div className="w-16 h-16 rounded-[1.5rem] bg-white/10 backdrop-blur-md flex items-center justify-center text-white mb-3 ring-1 ring-white/20 shadow-inner">
+                <Stethoscope className="w-8 h-8 text-primary-400" />
+            </div>
+            <p className="text-xs font-bold text-white mb-4">Need medical help?</p>
+            <button className="w-full py-2.5 px-4 bg-primary-500 hover:bg-primary-400 text-white text-[11px] font-black rounded-xl transition-all shadow-lg shadow-primary-900/50 active:scale-95">
+                Contact Support
+            </button>
         </div>
       </div>
-      <button
-        onClick={handleLogout}
-        className="flex w-full items-center gap-3 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-      >
-        <LogOut className="w-5 h-5" />
-        Logout
-      </button>
+
+      <div className="mt-8 px-4 flex items-center justify-between">
+         <button 
+           onClick={handleLogout}
+           className="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-rose-600 transition-colors group"
+         >
+            <div className="p-2 rounded-lg bg-slate-100 group-hover:bg-rose-50 group-hover:text-rose-600 transition-all">
+                <LogOut className="w-4 h-4" />
+            </div>
+            Sign Out
+         </button>
+      </div>
     </div>
-  </>
+  </div>
 );
 
 const GlobalSearch = ({ role }) => {
