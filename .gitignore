@@ -1,7 +1,27 @@
-# Server
-/server/node_modules/
+# 🔒 Environment files (VERY IMPORTANT)
 .env
-*.log
+.env.*
+server/.env
+server/.env.*
+client/.env
+client/.env.*
 
-# Client
-/client/node_modules/
+# 📦 Node modules
+node_modules/
+server/node_modules/
+client/node_modules/
+
+# 🧾 Logs
+*.log
+logs/
+server/combined.log
+server/error.log
+client/logs/
+# Mocks
+client/mocks/
+# 🛠 Build outputs
+dist/
+build/
+server/dist/
+client/dist/
+client/build/

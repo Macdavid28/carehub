@@ -7,6 +7,8 @@ import Input from "../components/ui/Input";
 import { Link } from "react-router-dom";
 import useAuthStore from "../store/useAuthStore";
 import Pagination from "../components/ui/Pagination";
+import { toast } from "react-hot-toast";
+import PatientForm from "../components/forms/PatientForm";
 
 const PatientsPage = ({ scope = "all" }) => {
   const { user } = useAuthStore();
@@ -30,9 +32,11 @@ const PatientsPage = ({ scope = "all" }) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["patients"]);
+      toast.success("Patient deleted");
     },
     onError: () => {
       alert("Failed to delete patient");
+      toast.error("Failed to delete patient");
     },
   });
 
@@ -58,7 +62,7 @@ const PatientsPage = ({ scope = "all" }) => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <h1 className="text-2xl font-bold text-gray-900">Patients</h1>
         {user?.role === "admin" && (
           <Button>
@@ -68,14 +72,14 @@ const PatientsPage = ({ scope = "all" }) => {
         )}
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="p-4 border-b border-gray-100 flex gap-4">
+      <div className="overflow-hidden bg-white border border-gray-100 shadow-sm rounded-xl">
+        <div className="flex gap-4 p-4 border-b border-gray-100">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
             <input
               type="text"
               placeholder="Search patients..."
-              className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full py-2 pr-4 text-sm border border-gray-200 rounded-lg pl-9 focus:outline-none focus:ring-2 focus:ring-primary-500"
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
@@ -87,7 +91,7 @@ const PatientsPage = ({ scope = "all" }) => {
 
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="bg-gray-50 text-gray-600 font-medium">
+            <thead className="font-medium text-gray-600 bg-gray-50">
               <tr>
                 <th className="px-6 py-4">Name</th>
                 <th className="px-6 py-4">Contact</th>
@@ -100,11 +104,11 @@ const PatientsPage = ({ scope = "all" }) => {
               {paginatedPatients.map((patient) => (
                 <tr
                   key={patient._id}
-                  className="hover:bg-gray-50 transition-colors"
+                  className="transition-colors hover:bg-gray-50"
                 >
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold">
+                      <div className="flex items-center justify-center w-8 h-8 font-bold rounded-full bg-primary-100 text-primary-700">
                         {patient.name.charAt(0)}
                       </div>
                       <div>
@@ -119,7 +123,7 @@ const PatientsPage = ({ scope = "all" }) => {
                     {patient.contact || "N/A"}
                   </td>
                   <td className="px-6 py-4">
-                    <span className="px-2 py-1 bg-red-50 text-red-700 rounded text-xs font-medium border border-red-100">
+                    <span className="px-2 py-1 text-xs font-medium text-red-700 border border-red-100 rounded bg-red-50">
                       {patient.bloodGroup || "?"}
                     </span>
                   </td>
@@ -129,7 +133,7 @@ const PatientsPage = ({ scope = "all" }) => {
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2">
                       <Link to={`/${user?.role}/patients/${patient._id}`}>
-                        <button className="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors">
+                        <button className="p-2 text-gray-400 transition-colors rounded-lg hover:text-primary-600 hover:bg-primary-50">
                           <Eye className="w-4 h-4" />
                         </button>
                       </Link>
@@ -144,7 +148,7 @@ const PatientsPage = ({ scope = "all" }) => {
                               deleteMutation.mutate(patient._id);
                             }
                           }}
-                          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          className="p-2 text-gray-400 transition-colors rounded-lg hover:text-red-600 hover:bg-red-50"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>

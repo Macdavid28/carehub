@@ -14,7 +14,7 @@ import statsRoutes from "./routes/stats.routes.js";
 import prescriptionRoutes from "./routes/prescription.routes.js";
 import medicalRecordRoutes from "./routes/medical_record.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
-
+import { errorHandler } from "./middleware/errorHandler.js";
 // Connect to Database
 connectDB();
 
@@ -29,7 +29,7 @@ app.use(
 );
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
-
+app.use(errorHandler);
 // Prevent Caching
 app.use((req, res, next) => {
   res.set("Cache-Control", "no-store");

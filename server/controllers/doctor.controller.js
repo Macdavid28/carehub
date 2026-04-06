@@ -126,7 +126,8 @@ export const updateDoctor = async (req, res) => {
     doctor.specialization = specialization || doctor.specialization;
     doctor.department = department || doctor.department;
     doctor.qualification = qualification || doctor.qualification;
-    doctor.experience = experience !== undefined ? experience : doctor.experience;
+    doctor.experience =
+      experience !== undefined ? experience : doctor.experience;
     doctor.availableDays = availableDays || doctor.availableDays;
     doctor.availableTimeStart = availableTimeStart || doctor.availableTimeStart;
     doctor.availableTimeEnd = availableTimeEnd || doctor.availableTimeEnd;

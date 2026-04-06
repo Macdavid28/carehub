@@ -22,7 +22,6 @@ export const getAdminProfile = async (req, res) => {
     }
     res.json({ success: true, admin });
   } catch (error) {
-    console.error("getAdminProfile error:", error);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
@@ -47,7 +46,6 @@ export const updateAdminProfile = async (req, res) => {
     const { password: _, ...adminData } = updated.toObject();
     res.json({ success: true, admin: adminData });
   } catch (error) {
-    console.error("updateAdminProfile error:", error);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
@@ -93,7 +91,6 @@ export const changeAdminPassword = async (req, res) => {
 
     res.json({ success: true, message: "Password updated successfully" });
   } catch (error) {
-    console.error("changeAdminPassword error:", error);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
@@ -124,7 +121,6 @@ export const getAllUsers = async (req, res) => {
       patients: patientsWithRole,
     });
   } catch (error) {
-    console.error("getAllUsers error:", error);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
@@ -143,7 +139,6 @@ export const adminGetDoctors = async (req, res) => {
       .populate("department", "name");
     res.json({ success: true, doctors });
   } catch (error) {
-    console.error("adminGetDoctors error:", error);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
@@ -189,18 +184,20 @@ export const adminCreateDoctor = async (req, res) => {
 
     const doctorExists = await Doctor.findOne({ email });
     if (doctorExists) {
-      return res
-        .status(400)
-        .json({ success: false, message: "A doctor with this email already exists" });
+      return res.status(400).json({
+        success: false,
+        message: "A doctor with this email already exists",
+      });
     }
 
     // Check patient / admin collision too
     const patientExists = await Patient.findOne({ email });
     const adminExists = await Admin.findOne({ email });
     if (patientExists || adminExists) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Email already in use by another account" });
+      return res.status(400).json({
+        success: false,
+        message: "Email already in use by another account",
+      });
     }
 
     const salt = await bcryptjs.genSalt(10);
@@ -226,7 +223,6 @@ export const adminCreateDoctor = async (req, res) => {
     const { password: _, ...doctorData } = doctor.toObject();
     res.status(201).json({ success: true, doctor: doctorData });
   } catch (error) {
-    console.error("adminCreateDoctor error:", error);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
@@ -262,7 +258,8 @@ export const adminUpdateDoctor = async (req, res) => {
     doctor.specialization = specialization || doctor.specialization;
     doctor.department = department || doctor.department;
     doctor.qualification = qualification || doctor.qualification;
-    doctor.experience = experience !== undefined ? experience : doctor.experience;
+    doctor.experience =
+      experience !== undefined ? experience : doctor.experience;
     // doctor.fees = fees !== undefined ? fees : doctor.fees;
     doctor.gender = gender || doctor.gender;
     doctor.availableDays = availableDays || doctor.availableDays;
@@ -275,7 +272,6 @@ export const adminUpdateDoctor = async (req, res) => {
     const { password: _, ...doctorData } = updated.toObject();
     res.json({ success: true, doctor: doctorData });
   } catch (error) {
-    console.error("adminUpdateDoctor error:", error);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
@@ -295,7 +291,6 @@ export const adminDeleteDoctor = async (req, res) => {
     await Doctor.deleteOne({ _id: req.params.id });
     res.json({ success: true, message: "Doctor removed successfully" });
   } catch (error) {
-    console.error("adminDeleteDoctor error:", error);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
@@ -312,7 +307,6 @@ export const adminGetPatients = async (req, res) => {
     const patients = await Patient.find().select("-password");
     res.json({ success: true, patients });
   } catch (error) {
-    console.error("adminGetPatients error:", error);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
@@ -330,7 +324,6 @@ export const adminGetPatientById = async (req, res) => {
     }
     res.json({ success: true, patient });
   } catch (error) {
-    console.error("adminGetPatientById error:", error);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
@@ -343,9 +336,10 @@ export const adminCreatePatient = async (req, res) => {
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
-      return res
-        .status(400)
-        .json({ success: false, message: "name, email and password are required" });
+      return res.status(400).json({
+        success: false,
+        message: "name, email and password are required",
+      });
     }
 
     const exists =
@@ -372,7 +366,6 @@ export const adminCreatePatient = async (req, res) => {
     const { password: _, ...patientData } = patient.toObject();
     res.status(201).json({ success: true, patient: patientData });
   } catch (error) {
-    console.error("adminCreatePatient error:", error);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
@@ -410,14 +403,14 @@ export const adminUpdatePatient = async (req, res) => {
     patient.address = address || patient.address;
     patient.profileImage = profileImage || patient.profileImage;
     if (medicalHistory !== undefined) patient.medicalHistory = medicalHistory;
-    if (emergencyContact !== undefined) patient.emergencyContact = emergencyContact;
+    if (emergencyContact !== undefined)
+      patient.emergencyContact = emergencyContact;
     if (insurance !== undefined) patient.insurance = insurance;
 
     const updated = await patient.save();
     const { password: _, ...patientData } = updated.toObject();
     res.json({ success: true, patient: patientData });
   } catch (error) {
-    console.error("adminUpdatePatient error:", error);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
@@ -437,7 +430,6 @@ export const adminDeletePatient = async (req, res) => {
     await Patient.deleteOne({ _id: req.params.id });
     res.json({ success: true, message: "Patient removed successfully" });
   } catch (error) {
-    console.error("adminDeletePatient error:", error);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
@@ -464,7 +456,6 @@ export const adminGetAppointments = async (req, res) => {
 
     res.json({ success: true, total: appointments.length, appointments });
   } catch (error) {
-    console.error("adminGetAppointments error:", error);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
@@ -499,7 +490,6 @@ export const adminUpdateAppointment = async (req, res) => {
     const updated = await appointment.save();
     res.json({ success: true, appointment: updated });
   } catch (error) {
-    console.error("adminUpdateAppointment error:", error);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
@@ -519,7 +509,6 @@ export const adminDeleteAppointment = async (req, res) => {
     await Appointment.deleteOne({ _id: req.params.id });
     res.json({ success: true, message: "Appointment deleted successfully" });
   } catch (error) {
-    console.error("adminDeleteAppointment error:", error);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
@@ -569,7 +558,6 @@ export const adminGetStats = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("adminGetStats error:", error);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
@@ -588,14 +576,8 @@ export const getRecentActivity = async (req, res) => {
           .limit(limit)
           .populate("patient", "name email")
           .populate("doctor", "name specialization"),
-        Doctor.find()
-          .select("-password")
-          .sort({ createdAt: -1 })
-          .limit(5),
-        Patient.find()
-          .select("-password")
-          .sort({ createdAt: -1 })
-          .limit(5),
+        Doctor.find().select("-password").sort({ createdAt: -1 }).limit(5),
+        Patient.find().select("-password").sort({ createdAt: -1 }).limit(5),
       ]);
 
     res.json({
@@ -607,7 +589,6 @@ export const getRecentActivity = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("getRecentActivity error:", error);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };

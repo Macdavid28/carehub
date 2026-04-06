@@ -45,29 +45,20 @@ export const getAppointments = async (req, res) => {
   try {
     let appointments;
     const user = req.user;
-    console.log(
-      `[GET /appointments] Request by: ${user.name} (${user._id}), Role: ${user.role}`,
-    );
 
     if (user.role === "admin") {
-      console.log(" -> Fetching ALL appointments (Admin)");
       appointments = await Appointment.find()
         .populate("patient", "name email contact")
         .populate("doctor", "name specialization");
     } else if (user.role === "doctor") {
-      console.log(` -> Fetching appointments for Doctor: ${user._id}`);
       appointments = await Appointment.find({ doctor: user._id })
         .populate("patient", "name email contact profileImage")
         .populate("doctor", "name specialization");
     } else if (user.role === "patient") {
-      console.log(` -> Fetching appointments for Patient: ${user._id}`);
       appointments = await Appointment.find({ patient: user._id })
         .populate("doctor", "name specialization profileImage fees")
         .populate("patient", "name email contact");
     }
-
-    console.log(` -> Found ${appointments?.length || 0} appointments`);
-
     res.json(appointments);
   } catch (error) {
     console.error(error);
