@@ -5,6 +5,7 @@ import {
   createPatientProfile,
   updatePatientProfile,
   getMyPatientProfile,
+  deletePatientProfile,
 } from "../controllers/patient.controller.js";
 import { protect, authorize } from "../middleware/authMiddleware.js";
 
@@ -15,6 +16,7 @@ router
   .get(protect, authorize("admin", "doctor"), getPatients)
   .post(protect, createPatientProfile);
 
+router.route("/:id").delete(protect, deletePatientProfile);
 router.get("/me", protect, getMyPatientProfile);
 
 router

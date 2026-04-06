@@ -6,10 +6,13 @@ import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import { Link } from "react-router-dom";
 import useAuthStore from "../store/useAuthStore";
+import Pagination from "../components/ui/Pagination";
 
 const PatientsPage = ({ scope = "all" }) => {
   const { user } = useAuthStore();
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
   const queryClient = useQueryClient();
 
   const { data: patients, isLoading } = useQuery({
@@ -33,11 +36,23 @@ const PatientsPage = ({ scope = "all" }) => {
     },
   });
 
-  const filteredPatients = patients?.filter(
-    (patient) =>
-      patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      patient.email.toLowerCase().includes(searchTerm.toLowerCase()),
+  const filteredPatients =
+    patients?.filter(
+      (patient) =>
+        patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        patient.email.toLowerCase().includes(searchTerm.toLowerCase()),
+    ) || [];
+
+  const totalPages = Math.ceil(filteredPatients.length / pageSize);
+  const paginatedPatients = filteredPatients.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize,
   );
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   if (isLoading) return <div className="p-8">Loading patients...</div>;
 
@@ -62,7 +77,10 @@ const PatientsPage = ({ scope = "all" }) => {
               placeholder="Search patients..."
               className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
             />
           </div>
         </div>
@@ -79,7 +97,7 @@ const PatientsPage = ({ scope = "all" }) => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {filteredPatients?.map((patient) => (
+              {paginatedPatients.map((patient) => (
                 <tr
                   key={patient._id}
                   className="hover:bg-gray-50 transition-colors"
@@ -135,7 +153,7 @@ const PatientsPage = ({ scope = "all" }) => {
                   </td>
                 </tr>
               ))}
-              {filteredPatients?.length === 0 && (
+              {filteredPatients.length === 0 && (
                 <tr>
                   <td
                     colSpan="5"
@@ -148,6 +166,13 @@ const PatientsPage = ({ scope = "all" }) => {
             </tbody>
           </table>
         </div>
+        {filteredPatients.length > pageSize && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        )}
       </div>
     </div>
   );

@@ -19,12 +19,15 @@ import Modal from "../components/ui/Modal";
 import AppointmentForm from "../components/forms/AppointmentForm";
 import useAuthStore from "../store/useAuthStore";
 import toast from "react-hot-toast";
+import Pagination from "../components/ui/Pagination";
 
 const AppointmentsPage = () => {
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Reschedule State
@@ -92,14 +95,26 @@ const AppointmentsPage = () => {
 
   const tabs = ["All", "Pending", "Confirmed", "Completed", "Cancelled"];
 
-  const filteredAppointments = appointments?.filter((apt) => {
-    const matchesTab = activeTab === "All" || apt.status === activeTab;
-    const searchLower = searchTerm.toLowerCase();
-    const matchesSearch =
-      (apt.patient?.name?.toLowerCase() || "").includes(searchLower) ||
-      (apt.doctor?.name?.toLowerCase() || "").includes(searchLower);
-    return matchesTab && matchesSearch;
-  });
+  const filteredAppointments =
+    appointments?.filter((apt) => {
+      const matchesTab = activeTab === "All" || apt.status === activeTab;
+      const searchLower = searchTerm.toLowerCase();
+      const matchesSearch =
+        (apt.patient?.name?.toLowerCase() || "").includes(searchLower) ||
+        (apt.doctor?.name?.toLowerCase() || "").includes(searchLower);
+      return matchesTab && matchesSearch;
+    }) || [];
+
+  const totalPages = Math.ceil(filteredAppointments.length / pageSize);
+  const paginatedAppointments = filteredAppointments.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize,
+  );
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   if (isLoading) return <div className="p-8">Loading appointments...</div>;
 
@@ -121,7 +136,10 @@ const AppointmentsPage = () => {
             {tabs.map((tab) => (
               <button
                 key={tab}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => {
+                  setActiveTab(tab);
+                  setCurrentPage(1);
+                }}
                 className={cn(
                   "px-4 py-2 text-sm font-medium rounded-lg transition-colors whitespace-nowrap",
                   activeTab === tab
@@ -140,7 +158,10 @@ const AppointmentsPage = () => {
               placeholder="Search..."
               className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
             />
           </div>
         </div>
@@ -160,7 +181,7 @@ const AppointmentsPage = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {filteredAppointments?.map((apt) => (
+              {paginatedAppointments.map((apt) => (
                 <tr
                   key={apt._id}
                   className="hover:bg-gray-50 transition-colors"
@@ -261,7 +282,7 @@ const AppointmentsPage = () => {
                   </td>
                 </tr>
               ))}
-              {filteredAppointments?.length === 0 && (
+              {filteredAppointments.length === 0 && (
                 <tr>
                   <td
                     colSpan="6"
@@ -274,6 +295,14 @@ const AppointmentsPage = () => {
             </tbody>
           </table>
         </div>
+
+        {filteredAppointments.length > pageSize && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        )}
       </div>
       <Modal
         title="Book Appointment"

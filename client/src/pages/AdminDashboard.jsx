@@ -284,7 +284,7 @@ const AdminDashboard = () => {
       </div>
 
       {/* Secondary Actions Grid */}
-      <h2 className="text-lg font-bold text-gray-900 pt-4">More Actions</h2>
+      {/* <h2 className="text-lg font-bold text-gray-900 pt-4">More Actions</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <QuickActionCard
           to="/admin/dashboard"
@@ -310,7 +310,7 @@ const AdminDashboard = () => {
           color="text-gray-600"
           bg="bg-gray-50"
         />
-      </div>
+      </div> */}
       <Modal
         title="Register New Patient"
         isOpen={isPatientModalOpen}

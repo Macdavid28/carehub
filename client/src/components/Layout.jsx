@@ -85,14 +85,14 @@ const Layout = () => {
 
       {/* Mobile Sidebar Overlay */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-50 md:hidden">
+        <div className="fixed inset-0 z-[100] md:hidden">
           {/* Backdrop */}
           <div
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={() => setIsMobileMenuOpen(false)}
           />
           {/* Sidebar Panel */}
-          <aside className="absolute left-4 top-4 bottom-4 w-72 glass-card flex flex-col shadow-2xl p-0 overflow-hidden">
+          <aside className="absolute z-[100] left-4 top-4 bottom-4 w-72 glass-card flex flex-col shadow-2xl p-0 overflow-hidden">
             <SidebarContent
               user={user}
               handleLogout={handleLogout}
@@ -116,14 +116,20 @@ const Layout = () => {
               <Menu className="w-6 h-6" />
             </button>
             <div className="flex items-center gap-3 md:hidden">
-              <div className="w-8 h-8 rounded-xl bg-primary-600 flex items-center justify-center text-white font-bold">C</div>
-              <h1 className="text-xl font-black text-slate-900 tracking-tight">CareHub</h1>
+              <div className="w-8 h-8 rounded-xl bg-primary-600 flex items-center justify-center text-white font-bold">
+                C
+              </div>
+              <h1 className="text-xl font-black text-slate-900 tracking-tight">
+                CareHub
+              </h1>
             </div>
-            
+
             <div className="hidden md:block">
-               <h2 className="text-lg font-bold text-slate-800">
-                 {navItems.find(item => location.pathname.startsWith(item.path))?.label || "General"}
-               </h2>
+              <h2 className="text-lg font-bold text-slate-800">
+                {navItems.find((item) =>
+                  location.pathname.startsWith(item.path),
+                )?.label || "General"}
+              </h2>
             </div>
           </div>
 
@@ -132,17 +138,19 @@ const Layout = () => {
               <Bell className="w-5 h-5 text-slate-500" />
               <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-white group-hover:scale-110 transition-transform"></span>
             </button>
-            
+
             <div className="h-8 w-[1px] bg-slate-200 mx-2 hidden sm:block"></div>
-            
+
             <div className="flex items-center gap-3 pl-2 group cursor-pointer">
-               <div className="hidden sm:block text-right">
-                  <p className="text-xs font-bold text-slate-900">{user?.name}</p>
-                  <p className="text-[10px] font-medium text-slate-400 capitalize">{user?.role}</p>
-               </div>
-               <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold shadow-lg shadow-primary-200 ring-2 ring-white overflow-hidden group-hover:ring-primary-100 transition-all">
-                   {user?.name?.charAt(0).toUpperCase()}
-               </div>
+              <div className="hidden sm:block text-right">
+                <p className="text-xs font-bold text-slate-900">{user?.name}</p>
+                <p className="text-[10px] font-medium text-slate-400 capitalize">
+                  {user?.role}
+                </p>
+              </div>
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold shadow-lg shadow-primary-200 ring-2 ring-white overflow-hidden group-hover:ring-primary-100 transition-all">
+                {user?.name?.charAt(0).toUpperCase()}
+              </div>
             </div>
           </div>
         </header>
@@ -158,7 +166,6 @@ const Layout = () => {
 };
 
 const SidebarContent = ({
-  user,
   handleLogout,
   filteredNav,
   location,
@@ -168,7 +175,9 @@ const SidebarContent = ({
   <div className="flex flex-col h-full">
     <div className="p-8 pb-6 flex justify-between items-center">
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-2xl bg-primary-600 flex items-center justify-center text-white font-black text-xl shadow-xl shadow-primary-100 ring-4 ring-primary-50">C</div>
+        <div className="w-10 h-10 rounded-2xl bg-primary-600 flex items-center justify-center text-white font-black text-xl shadow-xl shadow-primary-100 ring-4 ring-primary-50">
+          C
+        </div>
         <h1 className="text-2xl font-black text-slate-900 tracking-tight">
           CareHub
         </h1>
@@ -184,8 +193,10 @@ const SidebarContent = ({
     </div>
 
     <div className="px-6 py-4">
-       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4 ml-4">Main Menu</p>
-       <nav className="space-y-1.5">
+      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4 ml-4">
+        Main Menu
+      </p>
+      <nav className="space-y-1.5">
         {filteredNav.map((item) => {
           const isActive = location.pathname.startsWith(item.path);
           return (
@@ -197,11 +208,18 @@ const SidebarContent = ({
                 "group flex items-center justify-between px-4 py-3.5 text-sm font-bold rounded-2xl transition-all duration-300",
                 isActive
                   ? "nav-item-active"
-                  : "text-slate-500 hover:bg-white hover:text-slate-900 hover:shadow-md hover:shadow-slate-200/50"
+                  : "text-slate-500 hover:bg-white hover:text-slate-900 hover:shadow-md hover:shadow-slate-200/50",
               )}
             >
               <div className="flex items-center gap-3">
-                <item.icon className={cn("w-5 h-5 transition-transform duration-300 group-hover:scale-110", isActive ? "text-primary-600" : "text-slate-400 group-hover:text-primary-500")} />
+                <item.icon
+                  className={cn(
+                    "w-5 h-5 transition-transform duration-300 group-hover:scale-110",
+                    isActive
+                      ? "text-primary-600"
+                      : "text-slate-400 group-hover:text-primary-500",
+                  )}
+                />
                 <span>{item.label}</span>
               </div>
               {isActive && <ChevronRight className="w-4 h-4 opacity-50" />}
@@ -215,26 +233,28 @@ const SidebarContent = ({
       <div className="glass-card p-4 !rounded-[2rem] bg-gradient-to-br from-slate-900 to-slate-800 border-none shadow-2xl relative overflow-hidden group">
         <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/20 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-primary-500/30 transition-all duration-500"></div>
         <div className="relative z-10 flex flex-col items-center text-center">
-            <div className="w-16 h-16 rounded-[1.5rem] bg-white/10 backdrop-blur-md flex items-center justify-center text-white mb-3 ring-1 ring-white/20 shadow-inner">
-                <Stethoscope className="w-8 h-8 text-primary-400" />
-            </div>
-            <p className="text-xs font-bold text-white mb-4">Need medical help?</p>
-            <button className="w-full py-2.5 px-4 bg-primary-500 hover:bg-primary-400 text-white text-[11px] font-black rounded-xl transition-all shadow-lg shadow-primary-900/50 active:scale-95">
-                Contact Support
-            </button>
+          <div className="w-16 h-16 rounded-[1.5rem] bg-white/10 backdrop-blur-md flex items-center justify-center text-white mb-3 ring-1 ring-white/20 shadow-inner">
+            <Stethoscope className="w-8 h-8 text-primary-400" />
+          </div>
+          <p className="text-xs font-bold text-white mb-4">
+            Need medical help?
+          </p>
+          <button className="w-full py-2.5 px-4 bg-primary-500 hover:bg-primary-400 text-white text-[11px] font-black rounded-xl transition-all shadow-lg shadow-primary-900/50 active:scale-95">
+            Contact Support
+          </button>
         </div>
       </div>
 
       <div className="mt-8 px-4 flex items-center justify-between">
-         <button 
-           onClick={handleLogout}
-           className="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-rose-600 transition-colors group"
-         >
-            <div className="p-2 rounded-lg bg-slate-100 group-hover:bg-rose-50 group-hover:text-rose-600 transition-all">
-                <LogOut className="w-4 h-4" />
-            </div>
-            Sign Out
-         </button>
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-rose-600 transition-colors group"
+        >
+          <div className="p-2 rounded-lg bg-slate-100 group-hover:bg-rose-50 group-hover:text-rose-600 transition-all">
+            <LogOut className="w-4 h-4" />
+          </div>
+          Sign Out
+        </button>
       </div>
     </div>
   </div>

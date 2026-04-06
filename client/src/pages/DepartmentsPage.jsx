@@ -6,10 +6,14 @@ import Button from "../components/ui/Button";
 import Modal from "../components/ui/Modal";
 import DepartmentForm from "../components/forms/DepartmentForm";
 import useAuthStore from "../store/useAuthStore";
+import Pagination from "../components/ui/Pagination";
 
 const DepartmentsPage = () => {
   const { user } = useAuthStore();
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDept, setSelectedDept] = useState(null);
   const queryClient = useQueryClient();
@@ -44,9 +48,21 @@ const DepartmentsPage = () => {
     },
   });
 
-  const filteredDepartments = departments?.filter((dept) =>
-    dept.name.toLowerCase().includes(searchTerm.toLowerCase()),
+  const filteredDepartments =
+    departments?.filter((dept) =>
+      dept.name.toLowerCase().includes(searchTerm.toLowerCase()),
+    ) || [];
+
+  const totalPages = Math.ceil(filteredDepartments.length / pageSize);
+  const paginatedDepartments = filteredDepartments.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize,
   );
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   if (isLoading) return <div className="p-8">Loading departments...</div>;
 
@@ -76,13 +92,16 @@ const DepartmentsPage = () => {
               placeholder="Search departments..."
               className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
             />
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-          {filteredDepartments?.map((dept) => (
+          {paginatedDepartments.map((dept) => (
             <div
               key={dept._id}
               className="bg-white border border-gray-100 rounded-xl overflow-hidden hover:shadow-md transition-shadow"
@@ -107,9 +126,6 @@ const DepartmentsPage = () => {
                 </p>
 
                 <div className="flex items-center justify-between mt-4 border-t pt-4">
-                  <span className="text-xs text-gray-500">
-                    Head: {dept.head?.user?.name || "Not Assigned"}
-                  </span>
                   {user?.role === "admin" && (
                     <div className="flex gap-2">
                       <button
@@ -138,12 +154,20 @@ const DepartmentsPage = () => {
               </div>
             </div>
           ))}
-          {filteredDepartments?.length === 0 && (
+          {filteredDepartments.length === 0 && (
             <div className="col-span-full text-center py-12 text-gray-500">
               No departments found.
             </div>
           )}
         </div>
+
+        {filteredDepartments.length > pageSize && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        )}
       </div>
 
       <Modal

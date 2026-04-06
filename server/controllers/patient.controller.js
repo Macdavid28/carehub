@@ -1,5 +1,7 @@
 import Patient from "../models/patient.model.js";
 import Appointment from "../models/appointment.model.js";
+import MedicalRecord from "../models/medical_record.model.js";
+import Prescription from "../models/prescription.model.js";
 import bcrypt from "bcryptjs";
 
 // @desc    Get all patients
@@ -151,6 +153,39 @@ export const getMyPatientProfile = async (req, res) => {
       res.status(404).json({ message: "Patient profile not found" });
     }
   } catch (error) {
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+export const deletePatientProfile = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const patient = await Patient.findById(id);
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    // Authorization: Admin or the patient themselves
+    if (
+      req.user.role === "admin" ||
+      req.user._id.toString() === patient._id.toString()
+    ) {
+      // Cascade delete related records
+      await Promise.all([
+        Appointment.deleteMany({ patient: id }),
+        MedicalRecord.deleteMany({ patient: id }),
+        Prescription.deleteMany({ patient: id }),
+        Patient.findByIdAndDelete(id),
+      ]);
+
+      res.status(200).json({
+        message: "Patient profile and all related data deleted successfully",
+      });
+    } else {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+  } catch (error) {
+    console.error("Error deleting patient profile:", error);
     res.status(500).json({ message: "Server Error" });
   }
 };
