@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node index.js",
     "admin": "node utils/seeder.js",
-    "server": "nodemon index.js",
+    "server": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
