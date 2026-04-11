@@ -11,7 +11,7 @@ const schema = yup
   .object({
     name: yup.string().required("Department name is required"),
     description: yup.string().required("Description is required"),
-    image: yup.string().url("Must be a valid URL"), // Optional
+    image: yup.mixed().nullable(), // For file upload
   })
   .required();
 
@@ -27,11 +27,15 @@ const DepartmentForm = ({ onSuccess, initialData }) => {
   });
 
   const mutation = useMutation({
-    mutationFn: async (data) => {
+    mutationFn: async (formData) => {
       if (initialData?._id) {
-        return axios.put(`/departments/${initialData._id}`, data);
+        return axios.put(`/departments/${initialData._id}`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
       }
-      return axios.post("/departments", data);
+      return axios.post("/departments", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["departments"]);
@@ -40,7 +44,16 @@ const DepartmentForm = ({ onSuccess, initialData }) => {
   });
 
   const onSubmit = (data) => {
-    mutation.mutate(data);
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("description", data.description);
+    
+    // If a new file is selected, append it
+    if (data.image && data.image.length > 0) {
+      formData.append("image", data.image[0]);
+    }
+    
+    mutation.mutate(formData);
   };
 
   return (
@@ -69,12 +82,25 @@ const DepartmentForm = ({ onSuccess, initialData }) => {
         )}
       </div>
 
-      <Input
-        label="Image URL (Optional)"
-        placeholder="https://..."
-        {...register("image")}
-        error={errors.image?.message}
-      />
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Department Image
+        </label>
+        <input
+          type="file"
+          accept="image/*"
+          className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 transition-colors"
+          {...register("image")}
+        />
+        {initialData?.image && !errors.image && (
+          <p className="text-xs text-gray-500 mt-1">
+            Current image: {initialData.image.split('/').pop()}
+          </p>
+        )}
+        {errors.image && (
+          <p className="text-sm text-red-500 mt-1">{errors.image.message}</p>
+        )}
+      </div>
 
       <div className="flex justify-end pt-4">
         <Button type="submit" isLoading={mutation.isPending}>

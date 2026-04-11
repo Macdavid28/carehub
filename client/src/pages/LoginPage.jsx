@@ -113,7 +113,7 @@ const LoginPage = () => {
                   to="/forgot-password"
                   className="text-sm text-primary-600 hover:text-primary-700 font-bold decoration-2 underline-offset-4 hover:underline transition-all"
                 >
-                  Recovery Security?
+                  Forgot Password?
                 </Link>
               </div>
             </div>
@@ -128,7 +128,7 @@ const LoginPage = () => {
             </Button>
           </form>
 
-          <div className="mt-8 sm:mt-10 text-center text-slate-500 font-medium border-t border-slate-100 pt-6 sm:pt-8">
+          <div className="mt-2 sm:mt-2 text-center text-slate-500 font-medium border-t border-slate-100 pt-6 sm:pt-8">
             New to CareHub?{" "}
             <Link
               to="/register"

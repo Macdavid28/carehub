@@ -20,7 +20,12 @@ export const getDepartments = async (req, res) => {
 // @access  Private/Admin
 export const createDepartment = async (req, res) => {
   try {
-    const { name, description, image } = req.body;
+    const { name, description } = req.body;
+    let image = "";
+
+    if (req.body.image) {
+      image = req.body.image;
+    }
 
     const departmentExists = await Department.findOne({
       name,
@@ -39,6 +44,7 @@ export const createDepartment = async (req, res) => {
 
     res.status(201).json(department);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Server Error" });
   }
 };
@@ -48,15 +54,24 @@ export const createDepartment = async (req, res) => {
 // @access  Private/Admin
 export const updateDepartment = async (req, res) => {
   try {
-    const { name, description, image, head } = req.body;
+    const { name, description, head } = req.body;
 
     const department = await Department.findById(req.params.id);
 
     if (department) {
       department.name = name || department.name;
       department.description = description || department.description;
-      department.image = image || department.image;
-      department.head = head || department.head;
+
+      if (req.body.image) {
+        department.image = req.body.image;
+      }
+
+      // Only update head if it's a valid ObjectId string or null
+      if (head === "" || head === "null" || head === null) {
+        department.head = null;
+      } else if (head) {
+        department.head = head;
+      }
 
       const updatedDepartment = await department.save();
       res.json(updatedDepartment);
@@ -64,7 +79,8 @@ export const updateDepartment = async (req, res) => {
       res.status(404).json({ message: "Department not found" });
     }
   } catch (error) {
-    res.status(500).json({ message: "Server Error" });
+    console.error("Update Department Error:", error);
+    res.status(500).json({ message: error.message || "Server Error" });
   }
 };
 

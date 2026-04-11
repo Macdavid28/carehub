@@ -81,7 +81,12 @@ const DoctorsPage = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="text-2xl font-bold text-gray-900">Doctors</h1>
         {user?.role === "admin" && (
-          <Button onClick={() => setIsModalOpen(true)}>
+          <Button
+            onClick={() => {
+              setSelectedDoctor(null);
+              setIsModalOpen(true);
+            }}
+          >
             <Plus className="w-4 h-4 mr-2" />
             Add Doctor
           </Button>
@@ -89,6 +94,7 @@ const DoctorsPage = () => {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        {/* ... existing filter code ... */}
         <div className="p-4 border-b border-gray-100 flex flex-wrap gap-4 items-center">
           <div className="relative flex-1 min-w-[240px] max-w-sm">
             <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
@@ -140,7 +146,7 @@ const DoctorsPage = () => {
               <p className="text-xs text-gray-500 mb-4">{doc.qualification}</p>
 
               <div className="w-full flex items-center justify-center gap-2 mt-auto">
-                <Link to={`/admin/doctors/${doc._id}`} className="flex-1">
+                <Link to={`${user?.role === 'admin' ? '/admin' : ''}/doctors/${doc._id}`} className="flex-1">
                   <Button variant="outline" size="sm" className="w-full">
                     View Profile
                   </Button>
@@ -158,20 +164,33 @@ const DoctorsPage = () => {
                   </Button>
                 )}
                 {user?.role === "admin" && (
-                  <button
-                    onClick={() => {
-                      if (
-                        window.confirm(
-                          "Are you sure you want to remove this doctor?",
-                        )
-                      ) {
-                        deleteMutation.mutate(doc._id);
-                      }
-                    }}
-                    className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => {
+                        setSelectedDoctor(doc);
+                        setIsModalOpen(true);
+                      }}
+                      className="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                      title="Edit Profile"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (
+                          window.confirm(
+                            "Are you sure you want to remove this doctor?",
+                          )
+                        ) {
+                          deleteMutation.mutate(doc._id);
+                        }
+                      }}
+                      className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      title="Remove Doctor"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
@@ -192,21 +211,36 @@ const DoctorsPage = () => {
         )}
       </div>
       <Modal
-        title="Add New Doctor"
+        title={selectedDoctor ? "Edit Doctor Profile" : "Add New Doctor"}
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedDoctor(null);
+        }}
       >
-        <DoctorForm onSuccess={() => setIsModalOpen(false)} />
+        <DoctorForm 
+          onSuccess={() => {
+            setIsModalOpen(false);
+            setSelectedDoctor(null);
+          }} 
+          initialData={selectedDoctor}
+        />
       </Modal>
 
       <Modal
         title={`Book Appointment with Dr. ${selectedDoctor?.name}`}
         isOpen={isAppointmentModalOpen}
-        onClose={() => setIsAppointmentModalOpen(false)}
+        onClose={() => {
+          setIsAppointmentModalOpen(false);
+          setSelectedDoctor(null);
+        }}
       >
         <AppointmentForm
           preselectedDoctorId={selectedDoctor?._id}
-          onSuccess={() => setIsAppointmentModalOpen(false)}
+          onSuccess={() => {
+            setIsAppointmentModalOpen(false);
+            setSelectedDoctor(null);
+          }}
         />
       </Modal>
     </div>

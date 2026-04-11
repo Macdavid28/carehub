@@ -15,8 +15,12 @@ import prescriptionRoutes from "./routes/prescription.routes.js";
 import medicalRecordRoutes from "./routes/medical_record.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import { errorHandler } from "./middleware/errorHandler.js";
+import { initCronJobs } from "./utils/cron.js";
 // Connect to Database
 connectDB();
+
+// Initialize Cron Jobs
+initCronJobs();
 
 const app = express();
 

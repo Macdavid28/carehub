@@ -49,3 +49,34 @@ export const resizePhoto = async (req, res, next) => {
     next(error);
   }
 };
+
+export const resizeDepartmentPhoto = async (req, res, next) => {
+  if (!req.file) return next();
+
+  try {
+    const filename = `department-${Date.now()}.jpeg`;
+    const uploadDir = "uploads/departments";
+
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    await sharp(req.file.buffer)
+      .resize(800, 600, {
+        fit: "inside",
+        withoutEnlargement: true,
+      })
+      .toFormat("jpeg")
+      .jpeg({ quality: 80 })
+      .toFile(`${uploadDir}/${filename}`);
+
+    // Set the file path on req.body so it's saved in the database
+    req.body.image = `/${uploadDir}/${filename}`;
+    next();
+  } catch (error) {
+    console.error("Department image resize error:", error);
+    next(error);
+  }
+};
+
+export default upload;
