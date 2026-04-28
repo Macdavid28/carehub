@@ -13,10 +13,9 @@ client/node_modules/
 
 # 🧾 Logs
 *.log
-logs/
 server/combined.log
 server/error.log
-client/logs/
+
 # Mocks
 client/mocks/
 # 🛠 Build outputs
