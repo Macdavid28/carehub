@@ -5,7 +5,7 @@ dotenv.config({ path: "../.env" });
 
 const verifyNewLogic = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI || "mongodb://localhost:27017/carehub");
+    await mongoose.connect(process.env.MONGO_URI);
     console.log("Connected to MongoDB");
 
     const now = new Date();
@@ -49,13 +49,13 @@ const verifyNewLogic = async () => {
     // Run Logic A
     await Appointment.updateMany(
       { date: { $lt: now }, status: "Pending" },
-      { $set: { status: "Expired" } }
+      { $set: { status: "Expired" } },
     );
 
     // Run Logic B
     await Appointment.updateMany(
       { date: { $lt: twentyFourHoursAgo }, status: "Confirmed" },
-      { $set: { status: "Completed" } }
+      { $set: { status: "Completed" } },
     );
 
     // Verify
@@ -67,8 +67,11 @@ const verifyNewLogic = async () => {
     console.log(`Confirmed (2h ago) -> ${resB.status} (Expected: Confirmed)`);
     console.log(`Confirmed (2d ago) -> ${resC.status} (Expected: Completed)`);
 
-    const success = resA.status === "Expired" && resB.status === "Confirmed" && resC.status === "Completed";
-    
+    const success =
+      resA.status === "Expired" &&
+      resB.status === "Confirmed" &&
+      resC.status === "Completed";
+
     if (success) {
       console.log("VERIFICATION SUCCESS: Split logic with grace period works!");
     } else {
@@ -76,7 +79,9 @@ const verifyNewLogic = async () => {
     }
 
     // Cleanup
-    await Appointment.deleteMany({ _id: { $in: [pendingPast._id, confirmedRecent._id, confirmedOld._id] } });
+    await Appointment.deleteMany({
+      _id: { $in: [pendingPast._id, confirmedRecent._id, confirmedOld._id] },
+    });
     await mongoose.disconnect();
     process.exit(0);
   } catch (error) {
