@@ -10,6 +10,9 @@ import {
   Building,
   Lock,
   ArrowRight,
+  Eye,
+  Phone,
+  Shield,
 } from "lucide-react";
 import ChangePasswordModal from "../components/ChangePasswordModal";
 import Button from "../components/ui/Button";
@@ -73,6 +76,14 @@ const AdminDashboard = () => {
     queryKey: ["adminStats"],
     queryFn: async () => {
       const { data } = await axios.get("/stats");
+      return data;
+    },
+  });
+
+  const { data: recentPatients } = useQuery({
+    queryKey: ["adminRecentPatients"],
+    queryFn: async () => {
+      const { data } = await axios.get("/patients");
       return data;
     },
   });
@@ -275,6 +286,78 @@ const AdminDashboard = () => {
                 </span>
               </div>
             </Link>
+          </div>
+        </div>
+
+        {/* Patient Profiles Grid - 2 per row responsively with compact text proportions */}
+        <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-gray-100 space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-base sm:text-lg font-bold text-gray-900">
+                Patient Profiles
+              </h2>
+              <p className="text-xs text-gray-500 mt-0.5">
+                Registered patient accounts overview
+              </p>
+            </div>
+            <Link
+              to="/admin/patients"
+              className="text-xs font-semibold text-primary-600 hover:text-primary-700 flex items-center gap-1"
+            >
+              View All <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {recentPatients && recentPatients.length > 0 ? (
+              recentPatients.slice(0, 6).map((patient) => (
+                <div
+                  key={patient._id}
+                  className="p-4 rounded-xl border border-gray-100 bg-slate-50/60 hover:bg-white hover:border-gray-200 transition-all flex items-center justify-between gap-3 shadow-2xs group"
+                >
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-xs shrink-0 group-hover:bg-primary-600 group-hover:text-white transition-colors">
+                      {patient.name?.charAt(0) || "P"}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h4 className="font-bold text-gray-900 text-xs sm:text-sm truncate">
+                        {patient.name}
+                      </h4>
+                      <p className="text-[11px] text-gray-500 truncate mt-0.5">
+                        {patient.email}
+                      </p>
+                      <div className="flex flex-wrap items-center gap-2 mt-1.5 text-[10px] text-gray-500 font-medium">
+                        <span className="px-1.5 py-0.5 bg-rose-50 text-rose-600 border border-rose-100 rounded font-bold whitespace-nowrap">
+                          {patient.bloodGroup || "N/A"}
+                        </span>
+                        <span>•</span>
+                        <span className="capitalize whitespace-nowrap">
+                          {patient.gender || "N/A"}
+                        </span>
+                        {patient.contact && (
+                          <>
+                            <span>•</span>
+                            <span className="truncate">{patient.contact}</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <Link
+                    to={`/admin/patients/${patient._id}`}
+                    className="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors shrink-0"
+                    title="View Profile"
+                  >
+                    <Eye className="w-4 h-4" />
+                  </Link>
+                </div>
+              ))
+            ) : (
+              <div className="col-span-1 sm:col-span-2 text-center py-6 text-xs text-gray-400">
+                No registered patient profiles found.
+              </div>
+            )}
           </div>
         </div>
       </div>

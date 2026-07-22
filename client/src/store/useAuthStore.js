@@ -15,6 +15,16 @@ const useAuthStore = create(
         set({ loading: true, error: null });
         try {
           const { data } = await api.post("/auth/login", { email, password });
+          sessionStorage.setItem(
+            "carehub-storage",
+            JSON.stringify({
+              state: {
+                user: data.user,
+                token: data.user.token,
+                isAuthenticated: true,
+              },
+            }),
+          );
           set({
             user: data.user,
             token: data.user.token,

@@ -9,8 +9,8 @@ const ProtectedRoute = ({ allowedRoles }) => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (allowedRoles && !allowedRoles.includes(user?.role)) {
-    return <Navigate to="/" replace />; // Or unauthorized page
+  if (allowedRoles && user?.role && !allowedRoles.includes(user.role)) {
+    return <Navigate to={`/${user.role}/dashboard`} replace />;
   }
 
   return <Outlet />;

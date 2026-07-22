@@ -20,3 +20,9 @@ export function getImageUrl(imagePath) {
     return cleanPath;
   }
 }
+
+export function formatDoctorName(name) {
+  if (!name) return "";
+  const cleanName = name.replace(/^(Dr\.\s*)+/i, "").trim();
+  return `Dr. ${cleanName}`;
+}

@@ -3,6 +3,8 @@ import axios from "../services/api";
 import { FileText, Activity, Calendar } from "lucide-react";
 import { format } from "date-fns";
 
+import { formatDoctorName } from "../lib/utils";
+
 const MedicalRecords = () => {
   const { data: records, isLoading } = useQuery({
     queryKey: ["myRecords"],
@@ -31,7 +33,7 @@ const MedicalRecords = () => {
             </div>
             <div className="flex items-center gap-4">
               <span className="text-sm text-primary-700">
-                Dr. {record.doctor?.name}
+                {formatDoctorName(record.doctor?.name)}
               </span>
               <span
                 className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${

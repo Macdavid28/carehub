@@ -78,7 +78,9 @@ const DoctorDashboard = () => {
         <div>
           <h1 className="mb-2 text-4xl font-black tracking-tight text-slate-900">
             Clinical Overview:{" "}
-            <span className="text-primary-600">Dr. {user?.name}</span>
+            <span className="text-primary-600">
+              {user?.name?.startsWith("Dr.") ? user?.name : `Dr. ${user?.name}`}
+            </span>
           </h1>
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-1.5 px-3 py-1 bg-primary-50 text-primary-700 rounded-lg text-[10px] font-black uppercase tracking-widest border border-primary-100">
@@ -227,28 +229,28 @@ const DoctorDashboard = () => {
                     <div className="w-10 h-1 rounded-full bg-primary-100"></div>
                   </div>
 
-                  <div className="px-4 pb-4 -mx-4 overflow-x-auto sm:mx-0 sm:px-0">
-                    <div className="space-y-4 min-w-[600px] md:min-w-full">
+                  <div className="overflow-x-auto pb-4 pt-1 -mx-4 px-4 sm:-mx-6 sm:px-6">
+                    <div className="space-y-4 min-w-[580px]">
                       {appointments?.length > 0 ? (
                         appointments.slice(0, 10).map((apt) => (
                           <div
                             key={apt._id}
-                            className="group flex flex-col sm:flex-row sm:items-center justify-between p-6 bg-slate-50/50 hover:bg-white rounded-[2rem] border border-transparent hover:border-slate-200 transition-all duration-300 shadow-none hover:shadow-xl hover:shadow-slate-200/50"
+                            className="group flex items-center justify-between gap-4 p-5 sm:p-6 bg-slate-50/50 hover:bg-white rounded-[2rem] border border-transparent hover:border-slate-200 transition-all duration-300 shadow-none hover:shadow-xl hover:shadow-slate-200/50"
                           >
-                            <div className="flex items-center gap-5">
-                              <div className="flex items-center justify-center transition-all duration-500 bg-white border shadow-sm w-14 h-14 rounded-2xl border-slate-200 text-primary-600 group-hover:bg-primary-600 group-hover:text-white">
-                                <User className="w-6 h-6" />
+                            <div className="flex items-center gap-4 sm:gap-5 min-w-0 flex-1">
+                              <div className="flex items-center justify-center transition-all duration-500 bg-white border shadow-sm w-12 h-12 sm:w-14 sm:h-14 rounded-2xl border-slate-200 text-primary-600 group-hover:bg-primary-600 group-hover:text-white shrink-0">
+                                <User className="w-5 h-5 sm:w-6 sm:h-6" />
                               </div>
-                              <div>
-                                <h4 className="text-lg font-black tracking-tight text-slate-900">
+                              <div className="min-w-0 flex-1">
+                                <h4 className="text-base sm:text-lg font-black tracking-tight text-slate-900 truncate">
                                   {apt.patient?.name}
                                 </h4>
-                                <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-slate-400 mt-1">
-                                  <span className="flex items-center gap-1.5 bg-white px-2 py-1 rounded-md border border-slate-100">
+                                <div className="flex items-center gap-2 sm:gap-3 text-[10px] font-black uppercase tracking-widest text-slate-400 mt-1 shrink-0">
+                                  <span className="flex items-center gap-1.5 bg-white px-2 py-1 rounded-md border border-slate-100 whitespace-nowrap">
                                     <Calendar className="w-3.5 h-3.5 text-primary-500" />{" "}
                                     {format(new Date(apt.date), "MMM dd")}
                                   </span>
-                                  <span className="flex items-center gap-1.5 bg-white px-2 py-1 rounded-md border border-slate-100">
+                                  <span className="flex items-center gap-1.5 bg-white px-2 py-1 rounded-md border border-slate-100 whitespace-nowrap">
                                     <Clock className="w-3.5 h-3.5 text-primary-500" />{" "}
                                     {apt.time}
                                   </span>
@@ -256,7 +258,7 @@ const DoctorDashboard = () => {
                               </div>
                             </div>
 
-                            <div className="mt-4 sm:mt-0">
+                            <div className="shrink-0">
                               <AppointmentActions
                                 appointment={apt}
                                 userRole="doctor"

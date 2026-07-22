@@ -33,7 +33,15 @@ const queryClient = new QueryClient();
 
 import { Toaster } from "react-hot-toast";
 
-// ... (existing imports)
+import useAuthStore from "./store/useAuthStore";
+
+const RootRedirect = () => {
+  const { isAuthenticated, user } = useAuthStore();
+  if (isAuthenticated && user?.role) {
+    return <Navigate to={`/${user.role}/dashboard`} replace />;
+  }
+  return <Navigate to="/login" replace />;
+};
 
 function App() {
   return (
@@ -105,11 +113,11 @@ function App() {
             </Route>
 
             {/* Shared/Common Routes or Redirects */}
-            <Route path="/" element={<Navigate to="/login" replace />} />
+            <Route path="/" element={<RootRedirect />} />
           </Route>
 
           {/* Catch all */}
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          <Route path="*" element={<RootRedirect />} />
         </Routes>
       </Router>
     </QueryClientProvider>

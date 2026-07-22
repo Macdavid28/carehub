@@ -57,7 +57,7 @@ const AppointmentActions = ({ appointment, userRole }) => {
 
   return (
     <>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 shrink-0">
         {/* Admin/Doctor Actions */}
         {["admin", "doctor"].includes(userRole) &&
           appointment.status === "Pending" && (

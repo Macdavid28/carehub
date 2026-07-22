@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
-import { cn } from "../lib/utils";
+import { cn, formatDoctorName } from "../lib/utils";
 import { format } from "date-fns";
 import Modal from "../components/ui/Modal";
 import AppointmentForm from "../components/forms/AppointmentForm";
@@ -166,18 +166,18 @@ const AppointmentsPage = () => {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
+        <div className="overflow-x-auto pb-4 pt-1">
+          <table className="w-full text-sm text-left min-w-[700px]">
             <thead className="bg-gray-50 text-gray-600 font-medium">
               <tr>
-                <th className="px-6 py-4">Patient</th>
+                <th className="px-6 py-4 whitespace-nowrap">Patient</th>
                 {user?.role !== "doctor" && (
-                  <th className="px-6 py-4">Doctor</th>
+                  <th className="px-6 py-4 whitespace-nowrap">Doctor</th>
                 )}
-                <th className="px-6 py-4">Date & Time</th>
-                <th className="px-6 py-4">Reason</th>
-                <th className="px-6 py-4">Status</th>
-                <th className="px-6 py-4 text-right">Actions</th>
+                <th className="px-6 py-4 whitespace-nowrap">Date & Time</th>
+                <th className="px-6 py-4 whitespace-nowrap">Reason</th>
+                <th className="px-6 py-4 whitespace-nowrap">Status</th>
+                <th className="px-6 py-4 text-right whitespace-nowrap">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -186,22 +186,22 @@ const AppointmentsPage = () => {
                   key={apt._id}
                   className="hover:bg-gray-50 transition-colors"
                 >
-                  <td className="px-6 py-4 font-medium text-gray-900">
+                  <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                     {apt.patient?.name || "Unknown"}
                   </td>
                   {user?.role !== "doctor" && (
-                    <td className="px-6 py-4 text-gray-600">
-                      Dr. {apt.doctor?.name || "Unknown"}
+                    <td className="px-6 py-4 text-gray-600 font-medium whitespace-nowrap">
+                      {formatDoctorName(apt.doctor?.name) || "Unknown"}
                     </td>
                   )}
-                  <td className="px-6 py-4">
-                    <div className="flex flex-col">
-                      <span className="flex items-center gap-1.5 text-gray-900">
-                        <Calendar className="w-3.5 h-3.5 text-gray-400" />
+                  <td className="px-6 py-4 whitespace-nowrap shrink-0">
+                    <div className="flex flex-col whitespace-nowrap">
+                      <span className="flex items-center gap-1.5 text-gray-900 whitespace-nowrap">
+                        <Calendar className="w-3.5 h-3.5 text-gray-400 shrink-0" />
                         {format(new Date(apt.date), "MMM dd, yyyy")}
                       </span>
-                      <span className="flex items-center gap-1.5 text-gray-500 text-xs mt-1">
-                        <Clock className="w-3.5 h-3.5" />
+                      <span className="flex items-center gap-1.5 text-gray-500 text-xs mt-1 whitespace-nowrap">
+                        <Clock className="w-3.5 h-3.5 shrink-0" />
                         {apt.time}
                       </span>
                     </div>

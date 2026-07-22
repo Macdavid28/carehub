@@ -3,7 +3,7 @@ import axios from "../services/api";
 import { Pill, RotateCcw, Clock, Image as ImageIcon } from "lucide-react";
 import { format } from "date-fns";
 import Button from "./ui/Button";
-import { getImageUrl } from "../lib/utils";
+import { getImageUrl, formatDoctorName } from "../lib/utils";
 
 const Prescriptions = () => {
   const { data: prescriptions, isLoading } = useQuery({
@@ -72,7 +72,7 @@ const Prescriptions = () => {
 
             <div className="pt-4 border-t border-gray-50">
               <p className="text-xs text-gray-400 mb-3">
-                Prescribed by Dr. {script.doctor?.name} on{" "}
+                Prescribed by {formatDoctorName(script.doctor?.name)} on{" "}
                 {format(new Date(script.startDate), "MMM dd, yyyy")}
               </p>
               {script.status === "Active" && (

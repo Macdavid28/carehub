@@ -2,10 +2,9 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
-import axios from "../../services/api";
+import { formatDoctorName } from "../../lib/utils";
 import Button from "../ui/Button";
 import Input from "../ui/Input";
-
 const schema = yup
   .object({
     doctor: yup.string().required("Please select a doctor"),
@@ -47,23 +46,34 @@ const AppointmentForm = ({ onSuccess, preselectedDoctorId }) => {
   });
 
   const onSubmit = (data) => {
-    mutation.mutate(data);
+    mutation.mutate({
+      ...data,
+      doctor: preselectedDoctorId || data.doctor,
+    });
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Select Doctor
-        </label>
+        <div className="flex items-center justify-between mb-1">
+          <label className="block text-sm font-medium text-gray-700">
+            Select Doctor
+          </label>
+          {preselectedDoctorId && (
+            <span className="text-[10px] font-bold text-primary-600 bg-primary-50 px-2 py-0.5 rounded uppercase tracking-wider">
+              Fixed Selection
+            </span>
+          )}
+        </div>
         <select
           {...register("doctor")}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+          disabled={!!preselectedDoctorId}
+          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-slate-100 disabled:text-slate-700 disabled:font-bold disabled:cursor-not-allowed"
         >
           <option value="">Select a Doctor</option>
           {doctors?.map((doc) => (
             <option key={doc._id} value={doc._id}>
-              Dr. {doc?.name} ({doc.specialization})
+              {formatDoctorName(doc?.name)} ({doc.specialization})
             </option>
           ))}
         </select>

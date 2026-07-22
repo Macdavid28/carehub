@@ -24,6 +24,7 @@ const Layout = () => {
   const location = useLocation();
   const queryClient = useQueryClient();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   const handleLogout = () => {
     queryClient.clear();
@@ -77,13 +78,20 @@ const Layout = () => {
   return (
     <div className="flex h-screen bg-[#f8fafc]">
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-72 glass-sidebar">
+      <aside
+        className={cn(
+          "hidden md:flex flex-col glass-sidebar transition-all duration-300 relative",
+          isSidebarCollapsed ? "w-20" : "w-72",
+        )}
+      >
         <SidebarContent
           user={user}
           handleLogout={handleLogout}
           filteredNav={filteredNav}
           location={location}
           setIsMobileMenuOpen={setIsMobileMenuOpen}
+          isCollapsed={isSidebarCollapsed}
+          setIsCollapsed={setIsSidebarCollapsed}
         />
       </aside>
 
@@ -119,6 +127,15 @@ const Layout = () => {
             >
               <Menu className="w-6 h-6" />
             </button>
+
+            <button
+              onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+              className="hidden md:flex p-2 text-slate-500 hover:bg-white hover:text-slate-800 rounded-xl border border-slate-200/60 shadow-sm transition-all active:scale-95"
+              title={isSidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+
             <div className="flex items-center gap-3 md:hidden">
               <div className="w-8 h-8 rounded-xl bg-primary-600 flex items-center justify-center text-white font-bold">
                 C
@@ -175,16 +192,24 @@ const SidebarContent = ({
   location,
   setIsMobileMenuOpen,
   isMobile,
+  isCollapsed,
 }) => (
   <div className="flex flex-col h-full">
-    <div className="p-8 pb-6 flex justify-between items-center">
+    <div
+      className={cn(
+        "p-6 pb-4 flex items-center justify-between",
+        isCollapsed && "px-4 justify-center",
+      )}
+    >
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-2xl bg-primary-600 flex items-center justify-center text-white font-black text-xl shadow-xl shadow-primary-100 ring-4 ring-primary-50">
+        <div className="w-10 h-10 rounded-2xl bg-primary-600 flex items-center justify-center text-white font-black text-xl shadow-xl shadow-primary-100 ring-4 ring-primary-50 shrink-0">
           C
         </div>
-        <h1 className="text-2xl font-black text-slate-900 tracking-tight">
-          CareHub
-        </h1>
+        {!isCollapsed && (
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight transition-opacity duration-200">
+            CareHub
+          </h1>
+        )}
       </div>
       {isMobile && (
         <button
@@ -196,10 +221,12 @@ const SidebarContent = ({
       )}
     </div>
 
-    <div className="px-6 py-4">
-      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4 ml-4">
-        Main Menu
-      </p>
+    <div className={cn("px-4 py-4", isCollapsed && "px-2")}>
+      {!isCollapsed && (
+        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4 ml-4">
+          Main Menu
+        </p>
+      )}
       <nav className="space-y-1.5">
         {filteredNav.map((item) => {
           const isActive = location.pathname.startsWith(item.path);
@@ -207,9 +234,11 @@ const SidebarContent = ({
             <Link
               key={item.path}
               to={item.path}
+              title={isCollapsed ? item.label : undefined}
               onClick={() => setIsMobileMenuOpen(false)}
               className={cn(
                 "group flex items-center justify-between px-4 py-3.5 text-sm font-bold rounded-2xl transition-all duration-300",
+                isCollapsed && "justify-center px-0 py-3",
                 isActive
                   ? "nav-item-active"
                   : "text-slate-500 hover:bg-white hover:text-slate-900 hover:shadow-md hover:shadow-slate-200/50",
@@ -218,46 +247,34 @@ const SidebarContent = ({
               <div className="flex items-center gap-3">
                 <item.icon
                   className={cn(
-                    "w-5 h-5 transition-transform duration-300 group-hover:scale-110",
+                    "w-5 h-5 transition-transform duration-300 group-hover:scale-110 shrink-0",
                     isActive
                       ? "text-primary-600"
                       : "text-slate-400 group-hover:text-primary-500",
                   )}
                 />
-                <span>{item.label}</span>
+                {!isCollapsed && <span>{item.label}</span>}
               </div>
-              {isActive && <ChevronRight className="w-4 h-4 opacity-50" />}
+              {!isCollapsed && isActive && (
+                <ChevronRight className="w-4 h-4 opacity-50" />
+              )}
             </Link>
           );
         })}
       </nav>
     </div>
 
-    <div className="mt-auto px-6 py-8">
-      {/* <div className="glass-card p-4 !rounded-[2rem] bg-gradient-to-br from-slate-900 to-slate-800 border-none shadow-2xl relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/20 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-primary-500/30 transition-all duration-500"></div>
-        <div className="relative z-10 flex flex-col items-center text-center">
-          <div className="w-16 h-16 rounded-[1.5rem] bg-white/10 backdrop-blur-md flex items-center justify-center text-white mb-3 ring-1 ring-white/20 shadow-inner">
-            <Stethoscope className="w-8 h-8 text-primary-400" />
-          </div>
-          <p className="text-xs font-bold text-white mb-4">
-            Need medical help?
-          </p>
-          <button className="w-full py-2.5 px-4 bg-primary-500 hover:bg-primary-400 text-white text-[11px] font-black rounded-xl transition-all shadow-lg shadow-primary-900/50 active:scale-95">
-            Contact Support
-          </button>
-        </div>
-      </div> */}
-
-      <div className="mt-8 px-4 flex items-center justify-between">
+    <div className="mt-auto px-4 py-6">
+      <div className={cn("flex items-center justify-between", isCollapsed && "justify-center")}>
         <button
           onClick={handleLogout}
+          title={isCollapsed ? "Sign Out" : undefined}
           className="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-rose-600 transition-colors group"
         >
           <div className="p-2 rounded-lg bg-slate-100 group-hover:bg-rose-50 group-hover:text-rose-600 transition-all">
             <LogOut className="w-4 h-4" />
           </div>
-          Sign Out
+          {!isCollapsed && "Sign Out"}
         </button>
       </div>
     </div>

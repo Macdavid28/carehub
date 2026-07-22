@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -16,10 +17,22 @@ const schema = yup
   .required();
 
 const LoginPage = () => {
-  const { login, loading, error, clearError } = useAuthStore();
+  const { login, loading, error, clearError, isAuthenticated, user } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname || "/"; // Redirect to where they came from
+  const from = location.state?.from?.pathname || "/";
+
+  useEffect(() => {
+    if (isAuthenticated && user?.role) {
+      if (from && from !== "/" && from !== "/login") {
+        navigate(from, { replace: true });
+      } else {
+        if (user.role === "admin") navigate("/admin/dashboard", { replace: true });
+        else if (user.role === "doctor") navigate("/doctor/dashboard", { replace: true });
+        else navigate("/patient/dashboard", { replace: true });
+      }
+    }
+  }, [isAuthenticated, user, location, navigate]);
 
   const {
     register,

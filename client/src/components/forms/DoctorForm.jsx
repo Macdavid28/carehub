@@ -74,7 +74,11 @@ const DoctorForm = ({ onSuccess, initialData }) => {
   });
 
   const onSubmit = (data) => {
-    mutation.mutate(data);
+    const formattedData = {
+      ...data,
+      name: data.name ? data.name.replace(/^(Dr\.\s*)+/i, "").trim() : data.name,
+    };
+    mutation.mutate(formattedData);
   };
 
   return (
