@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import useAuthStore from "../store/useAuthStore";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
-import { AlertCircle, CheckCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const schema = yup
@@ -60,9 +60,7 @@ const RegisterPage = () => {
       >
         <div className="glass-card shadow-2xl shadow-indigo-200/50 p-8 md:p-10">
           <div className="text-center mb-10">
-            <div className="w-16 h-16 bg-primary-600 rounded-2xl flex items-center justify-center text-white mx-auto mb-6 shadow-xl shadow-primary-200 animate-pulse">
-               <CheckCircle className="w-8 h-8" />
-            </div>
+      
             <h2 className="text-3xl font-black text-slate-900 tracking-tight">Create Account</h2>
             <p className="text-slate-500 font-medium mt-2 text-sm leading-relaxed">
               Step into a new era of <span className="text-primary-600 font-bold">personalized healthcare</span>
@@ -73,7 +71,7 @@ const RegisterPage = () => {
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="bg-rose-50 text-rose-600 p-4 rounded-2xl mb-8 flex items-center gap-3 text-sm font-bold border border-rose-100 shadow-sm"
+              className="bg-rose-50 text-rose-600 p-4 rounded-md mb-8 flex items-center gap-3 text-sm font-bold border border-rose-100 shadow-sm"
             >
               <AlertCircle className="w-5 h-5" />
               {error}
@@ -85,7 +83,7 @@ const RegisterPage = () => {
               <Input
                 label="Full Name"
                 placeholder="Dr. Gregory House"
-                className="rounded-2xl"
+                className="rounded-md"
                 {...register("name")}
                 error={errors.name?.message}
               />
@@ -94,7 +92,7 @@ const RegisterPage = () => {
                 label="Email Address"
                 type="email"
                 placeholder="house@carehub.com"
-                className="rounded-2xl"
+                className="rounded-md"
                 {...register("email")}
                 error={errors.email?.message}
               />
@@ -105,7 +103,7 @@ const RegisterPage = () => {
                 label="Password"
                 type="password"
                 placeholder="••••••••"
-                className="rounded-2xl"
+                className="rounded-md"
                 {...register("password")}
                 error={errors.password?.message}
               />
@@ -114,7 +112,7 @@ const RegisterPage = () => {
                 label="Confirm Password"
                 type="password"
                 placeholder="••••••••"
-                className="rounded-2xl"
+                className="rounded-md"
                 {...register("confirmPassword")}
                 error={errors.confirmPassword?.message}
               />
@@ -122,7 +120,7 @@ const RegisterPage = () => {
   
             <Button
               type="submit"
-              className="w-full mt-6 hms-gradient-blue rounded-2xl py-4 text-lg font-black shadow-primary-200"
+              className="w-full mt-6 hms-gradient-blue rounded-md py-2 text-lg font-black shadow-primary-200"
               isLoading={loading}
               size="lg"
             >
