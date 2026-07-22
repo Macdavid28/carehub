@@ -18,6 +18,7 @@ server/error.log
 
 # Mocks
 client/mocks/
+
 # 🛠 Build outputs
 dist/
 build/
