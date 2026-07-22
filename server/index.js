@@ -24,9 +24,31 @@ initCronJobs();
 const app = express();
 
 // Middleware
+const allowedOrigins = [
+  "https://carehub-med.vercel.app",
+  "http://localhost:5173",
+  "http://localhost:3000",
+];
+
+if (process.env.CLIENT_LINK) {
+  const envOrigins = process.env.CLIENT_LINK.split(",").map((o) =>
+    o.trim().replace(/\/$/, ""),
+  );
+  envOrigins.forEach((o) => {
+    if (o && !allowedOrigins.includes(o)) allowedOrigins.push(o);
+  });
+}
+
 app.use(
   cors({
-    origin: process.env.CLIENT_LINK,
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      const cleanOrigin = origin.replace(/\/$/, "");
+      if (allowedOrigins.includes(cleanOrigin)) {
+        return callback(null, cleanOrigin);
+      }
+      return callback(null, cleanOrigin);
+    },
     credentials: true,
   }),
 );
