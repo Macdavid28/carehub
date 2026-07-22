@@ -6,11 +6,10 @@ import {
   Users,
   UserPlus,
   Calendar,
-  Activity,
+  Stethoscope,
   Building,
   Lock,
   ArrowRight,
-  FileBarChart2,
 } from "lucide-react";
 import ChangePasswordModal from "../components/ChangePasswordModal";
 import Button from "../components/ui/Button";
@@ -33,10 +32,6 @@ const StatCard = ({ label, value, color, bg, icon: Icon }) => (
       <div className={`p-3 rounded-xl ${bg}`}>
         <Icon className={`w-6 h-6 ${color}`} />
       </div>
-      {/* Placeholder for trend indicator */}
-      <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">
-        +4.5%
-      </span>
     </div>
     <div>
       <h3 className="text-3xl font-bold text-gray-900 mb-1">{value}</h3>
@@ -133,7 +128,7 @@ const AdminDashboard = () => {
         <StatCard
           label="Total Doctors"
           value={stats?.doctorsCount || 0}
-          icon={UserPlus}
+          icon={Stethoscope}
           color="text-green-600"
           bg="bg-green-50"
         />
@@ -153,8 +148,8 @@ const AdminDashboard = () => {
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+      <div className="space-y-8">
+        <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
           <div className="flex justify-between items-center mb-8">
             <div>
               <h2 className="text-lg font-bold text-gray-900">
@@ -220,18 +215,28 @@ const AdminDashboard = () => {
         </div>
 
         <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-8 rounded-2xl shadow-lg text-white">
-          <h2 className="text-xl font-bold mb-2">Priority Actions</h2>
-          <p className="text-gray-400 mb-8 text-sm">
-            Quickly manage your hospital resources.
-          </p>
+          <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+            <div>
+              <h2 className="text-xl font-bold">Priority Actions</h2>
+              <p className="text-gray-400 text-sm">
+                Quickly manage your hospital resources.
+              </p>
+            </div>
+            <Link
+              to="/admin/appointments"
+              className="flex items-center text-sm font-medium hover:text-white text-gray-300 transition-colors shrink-0"
+            >
+              View All Reports <ArrowRight className="w-4 h-4 ml-1" />
+            </Link>
+          </div>
 
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Link
               to="/admin/doctors"
               className="flex items-center p-4 bg-white/10 rounded-xl hover:bg-white/20 transition-colors backdrop-blur-sm border border-white/10"
             >
-              <div className="bg-primary-500 p-2 rounded-lg mr-4">
-                <UserPlus className="w-5 h-5 text-white" />
+              <div className="bg-primary-500 p-2 rounded-lg mr-4 shrink-0">
+                <Stethoscope className="w-5 h-5 text-white" />
               </div>
               <div>
                 <span className="block font-semibold">Add New Doctor</span>
@@ -245,7 +250,7 @@ const AdminDashboard = () => {
               onClick={() => setIsPatientModalOpen(true)}
               className="flex items-center p-4 bg-white/10 rounded-xl hover:bg-white/20 transition-colors backdrop-blur-sm border border-white/10 w-full text-left"
             >
-              <div className="bg-green-500 p-2 rounded-lg mr-4">
+              <div className="bg-green-500 p-2 rounded-lg mr-4 shrink-0">
                 <Users className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -260,7 +265,7 @@ const AdminDashboard = () => {
               to="/admin/departments"
               className="flex items-center p-4 bg-white/10 rounded-xl hover:bg-white/20 transition-colors backdrop-blur-sm border border-white/10"
             >
-              <div className="bg-orange-500 p-2 rounded-lg mr-4">
+              <div className="bg-orange-500 p-2 rounded-lg mr-4 shrink-0">
                 <Building className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -269,15 +274,6 @@ const AdminDashboard = () => {
                   Organize hospital units
                 </span>
               </div>
-            </Link>
-          </div>
-
-          <div className="mt-8 pt-6 border-t border-gray-700">
-            <Link
-              to="/admin/appointments"
-              className="flex justify-between items-center text-sm font-medium hover:text-white text-gray-300 transition-colors"
-            >
-              View All Reports <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         </div>

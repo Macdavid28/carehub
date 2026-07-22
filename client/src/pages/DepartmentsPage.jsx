@@ -7,13 +7,15 @@ import Modal from "../components/ui/Modal";
 import DepartmentForm from "../components/forms/DepartmentForm";
 import useAuthStore from "../store/useAuthStore";
 import Pagination from "../components/ui/Pagination";
+import { getImageUrl } from "../lib/utils";
 
 const DepartmentsPage = () => {
   const { user } = useAuthStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [failedImages, setFailedImages] = useState({});
   const pageSize = 10;
-  
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDept, setSelectedDept] = useState(null);
   const queryClient = useQueryClient();
@@ -101,59 +103,70 @@ const DepartmentsPage = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-          {paginatedDepartments.map((dept) => (
-            <div
-              key={dept._id}
-              className="bg-white border border-gray-100 rounded-xl overflow-hidden hover:shadow-md transition-shadow"
-            >
-              <div className="h-32 bg-gray-100 flex items-center justify-center">
-                {dept.image ? (
-                  <img
-                    src={dept.image}
-                    alt={dept.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <Building className="w-12 h-12 text-gray-300" />
-                )}
-              </div>
-              <div className="p-5">
-                <h3 className="text-lg font-bold text-gray-900 mb-2">
-                  {dept.name}
-                </h3>
-                <p className="text-sm text-gray-500 line-clamp-2 mb-4">
-                  {dept.description}
-                </p>
+          {paginatedDepartments.map((dept) => {
+            const imageUrl = getImageUrl(dept.image);
+            const hasValidImage = imageUrl && !failedImages[dept._id];
 
-                <div className="flex items-center justify-between mt-4 border-t pt-4">
-                  {user?.role === "admin" && (
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleEdit(dept)}
-                        className="p-1.5 text-primary-600 hover:bg-primary-50 rounded transition-colors"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => {
-                          if (
-                            window.confirm(
-                              "Are you sure you want to remove this department?",
-                            )
-                          ) {
-                            deleteMutation.mutate(dept._id);
-                          }
-                        }}
-                        className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
+            return (
+              <div
+                key={dept._id}
+                className="bg-white border border-gray-100 rounded-xl overflow-hidden hover:shadow-md transition-shadow"
+              >
+                <div className="h-32 bg-gray-100 flex items-center justify-center overflow-hidden">
+                  {hasValidImage ? (
+                    <img
+                      src={imageUrl}
+                      alt={dept.name}
+                      className="w-full h-full object-cover"
+                      onError={() =>
+                        setFailedImages((prev) => ({
+                          ...prev,
+                          [dept._id]: true,
+                        }))
+                      }
+                    />
+                  ) : (
+                    <Building className="w-12 h-12 text-gray-300" />
                   )}
                 </div>
+                <div className="p-5">
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">
+                    {dept.name}
+                  </h3>
+                  <p className="text-sm text-gray-500 line-clamp-2 mb-4">
+                    {dept.description}
+                  </p>
+
+                  <div className="flex items-center justify-between mt-4 border-t pt-4">
+                    {user?.role === "admin" && (
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleEdit(dept)}
+                          className="p-1.5 text-primary-600 hover:bg-primary-50 rounded transition-colors"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (
+                              window.confirm(
+                                "Are you sure you want to remove this department?",
+                              )
+                            ) {
+                              deleteMutation.mutate(dept._id);
+                            }
+                          }}
+                          className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
           {filteredDepartments.length === 0 && (
             <div className="col-span-full text-center py-12 text-gray-500">
               No departments found.

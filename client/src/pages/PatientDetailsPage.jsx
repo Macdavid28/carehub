@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { cn } from "../lib/utils";
+import { cn, getImageUrl } from "../lib/utils";
 import axios from "../services/api";
 import Button from "../components/ui/Button";
 import {
@@ -598,7 +598,7 @@ const PatientDetailsPage = () => {
                     {prescription.image && (
                       <motion.a
                         whileHover={{ scale: 1.05 }}
-                        href={`http://localhost:8000${prescription.image}`}
+                        href={getImageUrl(prescription.image)}
                         target="_blank"
                         rel="noreferrer"
                         className="flex items-center gap-2 text-[10px] text-primary-600 hover:text-primary-700 font-black uppercase tracking-widest bg-primary-50 px-4 py-2 rounded-xl border border-primary-100 shadow-sm"

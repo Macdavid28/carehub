@@ -3,6 +3,7 @@ import axios from "../services/api";
 import { Pill, RotateCcw, Clock, Image as ImageIcon } from "lucide-react";
 import { format } from "date-fns";
 import Button from "./ui/Button";
+import { getImageUrl } from "../lib/utils";
 
 const Prescriptions = () => {
   const { data: prescriptions, isLoading } = useQuery({
@@ -41,7 +42,7 @@ const Prescriptions = () => {
                   </span>
                   {script.image && (
                     <a
-                      href={`http://localhost:8000${script.image}`}
+                      href={getImageUrl(script.image)}
                       target="_blank"
                       rel="noreferrer"
                       className="flex items-center gap-1 text-[10px] text-primary-600 hover:text-primary-700 font-bold uppercase tracking-wider"

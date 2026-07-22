@@ -8,13 +8,12 @@ import {
   Users,
   FileText,
   Settings,
-  User,
+  Stethoscope,
   Search,
   Menu,
   X,
   Bell,
   ChevronRight,
-  Stethoscope,
 } from "lucide-react";
 import { cn } from "../lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
@@ -51,7 +50,12 @@ const Layout = () => {
       icon: Users,
       roles: ["admin", "doctor"],
     },
-    { label: "Doctors", path: "/admin/doctors", icon: User, roles: ["admin"] },
+    {
+      label: "Doctors",
+      path: "/admin/doctors",
+      icon: Stethoscope,
+      roles: ["admin"],
+    },
     {
       label: "Departments",
       path: "/admin/departments",
@@ -230,7 +234,7 @@ const SidebarContent = ({
     </div>
 
     <div className="mt-auto px-6 py-8">
-      <div className="glass-card p-4 !rounded-[2rem] bg-gradient-to-br from-slate-900 to-slate-800 border-none shadow-2xl relative overflow-hidden group">
+      {/* <div className="glass-card p-4 !rounded-[2rem] bg-gradient-to-br from-slate-900 to-slate-800 border-none shadow-2xl relative overflow-hidden group">
         <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/20 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-primary-500/30 transition-all duration-500"></div>
         <div className="relative z-10 flex flex-col items-center text-center">
           <div className="w-16 h-16 rounded-[1.5rem] bg-white/10 backdrop-blur-md flex items-center justify-center text-white mb-3 ring-1 ring-white/20 shadow-inner">
@@ -243,7 +247,7 @@ const SidebarContent = ({
             Contact Support
           </button>
         </div>
-      </div>
+      </div> */}
 
       <div className="mt-8 px-4 flex items-center justify-between">
         <button
